@@ -17,7 +17,6 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Service
-@Transactional
 public class SellerService {
     private final SellerProfileRepository sellerProfileRepository;
     private final UserRepository userRepository;
@@ -27,8 +26,13 @@ public class SellerService {
         this.userRepository = userRepository;
     }
 
+    @Transactional
     public SellerProfileReadDto create(SellerProfileCreateDto seller, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        if (user.getSellerProfile() != null) {
+            throw new IllegalStateException("Seller Profile already exists");
+        }
 
         SellerProfile sellerProfile = new SellerProfile();
         sellerProfile.setNickname(seller.getNickname());
@@ -49,6 +53,7 @@ public class SellerService {
         return mapToReadDto(sellerProfileRepository.save(sellerProfile));
     }
 
+    @Transactional(readOnly = true)
     public List<SellerProfileReadDto> findAll(Status status) {
         List<SellerProfile> sellerProfiles;
         if (status != null) {
@@ -60,6 +65,7 @@ public class SellerService {
         return sellerProfiles.stream().map(this::mapToReadDto).toList();
     }
 
+    @Transactional
     public SellerProfileReadDto changeStatus(Long id,  Status status) {
         SellerProfile sellerProfile = sellerProfileRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User not found"));
         sellerProfile.setStatus(status);

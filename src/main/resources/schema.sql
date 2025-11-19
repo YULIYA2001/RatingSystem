@@ -21,7 +21,7 @@ CREATE TABLE users
 CREATE TABLE seller_profiles
 (
     id          BIGSERIAL PRIMARY KEY,
-    user_id     BIGINT REFERENCES users (id),
+    user_id     BIGINT UNIQUE REFERENCES users (id),
     nickname    VARCHAR(50) NOT NULL UNIQUE,
     description TEXT,
     created_at  TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
