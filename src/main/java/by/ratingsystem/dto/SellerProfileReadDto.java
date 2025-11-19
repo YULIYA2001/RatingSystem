@@ -2,30 +2,19 @@ package by.ratingsystem.dto;
 
 import java.time.LocalDateTime;
 
-public class SellerProfileReadDto {
-    private Long id;
+public class SellerProfileReadDto extends ShortSellerProfileReadDto {
     private UserReadDto user;
-    private String nickname;
     private String description;
     private LocalDateTime createdDate;
     private String status;
 
     public SellerProfileReadDto(Long id, UserReadDto user, String nickname, String description,
                                 String status, LocalDateTime createdDate) {
-        this.id = id;
+        super(id, nickname);
         this.user = user;
-        this.nickname = nickname;
         this.description = description;
         this.status = status;
         this.createdDate = createdDate;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public UserReadDto getUser() {
@@ -34,14 +23,6 @@ public class SellerProfileReadDto {
 
     public void setUser(UserReadDto user) {
         this.user = user;
-    }
-
-    public String getNickname() {
-        return nickname;
-    }
-
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
     }
 
     public String getDescription() {
