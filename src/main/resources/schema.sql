@@ -62,7 +62,7 @@ CREATE TABLE games
 CREATE TABLE game_objects
 (
     id          BIGSERIAL PRIMARY KEY,
-    title       VARCHAR(50) NOT NULL UNIQUE,
+    title       VARCHAR(50) NOT NULL,
     description TEXT,
     created_at  TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at  TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
