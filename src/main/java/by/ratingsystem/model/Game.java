@@ -20,4 +20,28 @@ public class Game extends EntityWithCreationDate {
 
     @OneToMany(mappedBy = "game", fetch = FetchType.LAZY)
     private List<GameObject> gameObjects;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public List<GameObject> getGameObjects() {
+        return gameObjects;
+    }
+
+    public void setGameObjects(List<GameObject> gameObjects) {
+        this.gameObjects = gameObjects;
+    }
 }
