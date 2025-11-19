@@ -3,6 +3,7 @@ package by.ratingsystem.service;
 import by.ratingsystem.dto.SellerProfileCreateDto;
 import by.ratingsystem.dto.SellerProfileReadDto;
 import by.ratingsystem.dto.UserReadDto;
+import by.ratingsystem.exception.DuplicateEntityException;
 import by.ratingsystem.model.Rating;
 import by.ratingsystem.model.SellerProfile;
 import by.ratingsystem.model.Status;
@@ -32,6 +33,10 @@ public class SellerService {
 
         if (user.getSellerProfile() != null) {
             throw new IllegalStateException("Seller Profile already exists");
+        }
+
+        if (sellerProfileRepository.existsByNickname(seller.getNickname())) {
+            throw new DuplicateEntityException("Duplicate seller nickname");
         }
 
         SellerProfile sellerProfile = new SellerProfile();

@@ -12,4 +12,5 @@ import java.util.Optional;
 public interface SellerProfileRepository extends JpaRepository<SellerProfile, Long> {
     List<SellerProfile> findAllByStatus(Status status);
     Optional<SellerProfile> findByUserId(Long userId);
+    boolean existsByNickname(String nickname);
 }
