@@ -42,6 +42,9 @@ CREATE TABLE comments
     verified_seller BOOLEAN     NOT NULL DEFAULT TRUE
 );
 
+ALTER TABLE comments
+ADD CONSTRAINT unique_seller_author UNIQUE (seller_id, author_id);
+
 CREATE TABLE ratings
 (
     id             BIGSERIAL PRIMARY KEY,

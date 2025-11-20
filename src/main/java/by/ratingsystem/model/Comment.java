@@ -9,9 +9,14 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "comments")
+@Table(name = "comments",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"seller_id", "author_id"})
+        }
+)
 public class Comment extends TimestampedEntity {
     @Column(columnDefinition = "TEXT")
     private String message;

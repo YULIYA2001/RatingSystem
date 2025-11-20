@@ -12,15 +12,11 @@ VALUES ('TestSeller', 'TestSeller', 'testseller', 'testseller@gmail.com', 'SELLE
 INSERT INTO seller_profiles (user_id, nickname, description, status)
 VALUES (2, 'Test seller 1', 'Test seller 1 description', 'APPROVED');
 INSERT INTO ratings (seller_id, avg_rating, rating_sum, comments_count)
-VALUES (1, 4, 12, 3);
+VALUES (1, 4.5, 9, 2);
 
 INSERT INTO comments (author_id, seller_id, message, rating_mark, status)
 VALUES (0, 1, 'Test comment 1', 5, 'APPROVED');
 INSERT INTO comments (author_id, seller_id, message, rating_mark, status)
-VALUES (0, 1, 'Test comment 2', 4, 'APPROVED');
+VALUES (1, 1, 'Test comment 2', 4, 'APPROVED');
 INSERT INTO comments (author_id, seller_id, message, rating_mark, status)
-VALUES (0, 1, 'Test comment 3', 3, 'APPROVED');
-INSERT INTO comments (author_id, seller_id, message, rating_mark)
-VALUES (0, 1, 'Test comment 4', 2);
-INSERT INTO comments (author_id, seller_id, message, rating_mark)
-VALUES (0, 1, 'Test comment 5', 1);
+VALUES (2, 1, 'Test comment 3', 3, 'REJECTED');
