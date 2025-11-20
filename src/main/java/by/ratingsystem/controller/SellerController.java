@@ -39,6 +39,11 @@ public class SellerController {
         return new ResponseEntity<>(sellerService.findAll(status), HttpStatus.OK);
     }
 
+    @GetMapping("/top-best")
+    public ResponseEntity<List<SellerProfileReadDto>> getTopSellerProfiles(@RequestParam(required = false) Integer topCount) {
+        return new ResponseEntity<>(sellerService.findTopRatingSellers(topCount), HttpStatus.OK);
+    }
+
     @PostMapping("/{id}/approve")
     // @PreAuthorize(ADMIN)
     public ResponseEntity<SellerProfileReadDto> approveSellerProfile(@PathVariable Long id) {

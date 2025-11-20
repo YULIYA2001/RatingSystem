@@ -2,6 +2,8 @@ package by.ratingsystem.repository;
 
 import by.ratingsystem.model.SellerProfile;
 import by.ratingsystem.model.Status;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,4 +15,6 @@ public interface SellerProfileRepository extends JpaRepository<SellerProfile, Lo
     List<SellerProfile> findAllByStatus(Status status);
     Optional<SellerProfile> findByUserId(Long userId);
     boolean existsByNickname(String nickname);
+    Page<SellerProfile> findAllByOrderByRating_AvgRatingDesc(Pageable pageable);
+    List<SellerProfile> findAllByOrderByRating_AvgRatingDesc();
 }

@@ -11,6 +11,7 @@ import by.ratingsystem.model.User;
 import by.ratingsystem.repository.SellerProfileRepository;
 import by.ratingsystem.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -99,6 +100,7 @@ public class SellerService {
     private SellerProfileReadDto mapToReadDto(SellerProfile sellerProfile) {
         return new SellerProfileReadDto(
                 sellerProfile.getId(),
+                sellerProfile.getNickname(),
                 sellerProfile.getUser() == null ? new UserReadDto() : new UserReadDto(
                         sellerProfile.getUser().getId(),
                         sellerProfile.getUser().getFirstName(),
@@ -107,10 +109,24 @@ public class SellerService {
                         sellerProfile.getUser().getCreatedAt(),
                         sellerProfile.getUser().isVerified()
                 ),
-                sellerProfile.getNickname(),
                 sellerProfile.getDescription(),
+                sellerProfile.getCreatedAt(),
                 sellerProfile.getStatus().name(),
-                sellerProfile.getCreatedAt()
+                sellerProfile.getRating().getAvgRating().toString()
         );
+    }
+
+    @Transactional(readOnly = true)
+    public List<SellerProfileReadDto> findTopRatingSellers(Integer topCount) {
+        List<SellerProfile> topCountSellers;
+        if (topCount == null) {
+            topCountSellers = sellerProfileRepository
+                    .findAllByOrderByRating_AvgRatingDesc();
+        } else {
+            topCountSellers = sellerProfileRepository
+                    .findAllByOrderByRating_AvgRatingDesc(PageRequest.of(0, topCount))
+                    .getContent();
+        }
+        return topCountSellers.stream().map(this::mapToReadDto).toList();
     }
 }

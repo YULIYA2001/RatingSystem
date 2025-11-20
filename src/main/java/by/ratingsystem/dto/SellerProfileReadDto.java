@@ -7,14 +7,16 @@ public class SellerProfileReadDto extends ShortSellerProfileReadDto {
     private String description;
     private LocalDateTime createdDate;
     private String status;
+    private String rating;
 
-    public SellerProfileReadDto(Long id, UserReadDto user, String nickname, String description,
-                                String status, LocalDateTime createdDate) {
+    public SellerProfileReadDto(Long id, String nickname, UserReadDto user, String description,
+                                LocalDateTime createdDate, String status, String rating) {
         super(id, nickname);
         this.user = user;
         this.description = description;
-        this.status = status;
         this.createdDate = createdDate;
+        this.status = status;
+        this.rating = rating;
     }
 
     public UserReadDto getUser() {
@@ -47,5 +49,13 @@ public class SellerProfileReadDto extends ShortSellerProfileReadDto {
 
     public void setCreatedDate(LocalDateTime createdDate) {
         this.createdDate = createdDate;
+    }
+
+    public String getRating() {
+        return rating;
+    }
+
+    public void setRating(String rating) {
+        this.rating = rating;
     }
 }
