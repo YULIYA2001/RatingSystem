@@ -32,7 +32,7 @@ public class SellerService {
         User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User not found"));
 
         if (user.getSellerProfile() != null) {
-            throw new IllegalStateException("Seller Profile already exists");
+            throw new DuplicateEntityException("Seller Profile already exists");
         }
 
         if (sellerProfileRepository.existsByNickname(seller.getNickname())) {
@@ -60,12 +60,9 @@ public class SellerService {
 
     @Transactional(readOnly = true)
     public List<SellerProfileReadDto> findAll(Status status) {
-        List<SellerProfile> sellerProfiles;
-        if (status != null) {
-            sellerProfiles = sellerProfileRepository.findAllByStatus(status);
-        } else {
-            sellerProfiles = sellerProfileRepository.findAll();
-        }
+        List<SellerProfile> sellerProfiles = status != null
+                ? sellerProfileRepository.findAllByStatus(status)
+                : sellerProfileRepository.findAll();
 
         return sellerProfiles.stream().map(this::mapToReadDto).toList();
     }
