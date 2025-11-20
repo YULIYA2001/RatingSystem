@@ -1,5 +1,6 @@
 package by.ratingsystem.controller;
 
+import by.ratingsystem.dto.GameDto;
 import by.ratingsystem.dto.GameObjectCreateDto;
 import by.ratingsystem.dto.GameObjectReadDto;
 import by.ratingsystem.service.GameObjectService;
@@ -31,6 +32,11 @@ public class GameObjectController {
         // get authorized userId
         Long userId = 3L;
         return new ResponseEntity<>(gameObjectService.create(userId, gameObjectCreateDto), HttpStatus.CREATED);
+    }
+
+    @GetMapping("/games")
+    public ResponseEntity<List<GameDto>> getGames() {
+        return new ResponseEntity<>(gameObjectService.findAllExistingGames(), HttpStatus.OK);
     }
 
     @GetMapping

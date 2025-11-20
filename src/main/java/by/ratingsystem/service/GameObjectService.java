@@ -144,4 +144,13 @@ public class GameObjectService {
                 gameObject.getUpdatedAt()
         );
     }
+
+    @Transactional(readOnly = true)
+    public List<GameDto> findAllExistingGames() {
+        return gameRepository.findAll().stream().map(game -> new GameDto(
+                game.getId(),
+                game.getName(),
+                game.getDescription()
+        )).toList();
+    }
 }
