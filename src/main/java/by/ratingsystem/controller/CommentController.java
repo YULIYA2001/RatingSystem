@@ -6,6 +6,8 @@ import by.ratingsystem.service.CommentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,9 +30,17 @@ public class CommentController {
         return new ResponseEntity<>(commentService.getAll(sellerId, status), HttpStatus.OK);
     }
 
-//    @PostMapping
-//    //    @PreAuthorize(ADMIN)
-//    public ResponseEntity<List<CommentFullReadDto>> getApproveComments(@RequestBody List<Long> commentIds) {
-//        return null;
-//    }
+    @PostMapping("/approve")
+    //    @PreAuthorize(ADMIN)
+    public ResponseEntity<List<CommentFullReadDto>> approveComments(@RequestBody List<Long> ids) {
+        return new ResponseEntity<>(commentService.changeStatus(ids, Status.APPROVED), HttpStatus.OK);
+    }
+
+    @PostMapping("/reject")
+    //    @PreAuthorize(ADMIN)
+    public ResponseEntity<List<CommentFullReadDto>> rejectComments(@RequestBody List<Long> ids) {
+        return new ResponseEntity<>(commentService.changeStatus(ids, Status.REJECTED), HttpStatus.OK);
+    }
+
+
 }

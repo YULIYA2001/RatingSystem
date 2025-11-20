@@ -16,10 +16,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.file.AccessDeniedException;
+import java.util.IntSummaryStatistics;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class CommentService {
@@ -50,7 +53,7 @@ public class CommentService {
             comment = oldComment.get();
 
             if (comment.getStatus() == Status.APPROVED) {
-                ratingService.recalculateAndSaveRating(seller.getRating(), comment.getRatingMark());
+                ratingService.reduceAndSaveRating(seller.getRating(), comment.getRatingMark());
             }
 
             comment.setMessage(commentDto.getMessage());
@@ -153,7 +156,7 @@ public class CommentService {
         Comment comment = getById(sellerId, commentId);
 
         if (comment.getStatus() == Status.APPROVED) {
-            ratingService.recalculateAndSaveRating(comment.getSeller().getRating(), comment.getRatingMark());
+            ratingService.reduceAndSaveRating(comment.getSeller().getRating(), comment.getRatingMark());
         }
 
         commentRepository.deleteById(commentId);
@@ -168,7 +171,7 @@ public class CommentService {
         }
 
         if (comment.getStatus() == Status.APPROVED) {
-            ratingService.recalculateAndSaveRating(comment.getSeller().getRating(), comment.getRatingMark());
+            ratingService.reduceAndSaveRating(comment.getSeller().getRating(), comment.getRatingMark());
         }
 
         commentRepository.deleteById(commentId);
@@ -183,7 +186,7 @@ public class CommentService {
         }
 
         if (comment.getStatus() == Status.APPROVED) {
-            ratingService.recalculateAndSaveRating(comment.getSeller().getRating(), comment.getRatingMark());
+            ratingService.reduceAndSaveRating(comment.getSeller().getRating(), comment.getRatingMark());
         }
 
         comment.setMessage(commentCreateDto.getMessage());
@@ -191,6 +194,32 @@ public class CommentService {
         comment.setStatus(Status.PENDING);
 
         return mapToFullReadDto(comment);
+    }
+
+    @Transactional
+    public List<CommentFullReadDto> changeStatus(List<Long> ids, Status status) {
+        List<Comment> comments = commentRepository.findByIdInAndStatus(ids, Status.PENDING);
+        if (comments.isEmpty()) {
+            throw new EntityNotFoundException("No PENDING comment was found");
+        }
+
+        comments.forEach(comment -> comment.setStatus(status));
+
+        Map<SellerProfile, IntSummaryStatistics> result = comments.stream()
+                .collect(Collectors.groupingBy(
+                        Comment::getSeller,
+                        Collectors.summarizingInt(Comment::getRatingMark)
+                ));
+
+        if (status == Status.APPROVED) {
+            result.forEach((seller, stats) -> ratingService.increaseAndSaveRating(
+                    seller.getRating(),
+                    (int) stats.getSum(),
+                    (int) stats.getCount()
+            ));
+        }
+
+        return comments.stream().map(this::mapToFullReadDto).toList();
     }
 
     public CommentReadDto mapToReadDto(Comment comment) {

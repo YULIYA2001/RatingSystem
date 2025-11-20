@@ -8,10 +8,17 @@ import java.math.RoundingMode;
 
 @Service
 public class RatingService {
+    public void reduceAndSaveRating(Rating rating, int oldCommentRating) {
+        recalculateAndSaveRating(rating, -oldCommentRating, -1);
+    }
 
-    public void recalculateAndSaveRating(Rating rating, int oldCommentRating) {
-        int newSum = rating.getRatingSum() - oldCommentRating;
-        int newCount = rating.getCommentsCount() - 1;
+    public void increaseAndSaveRating(Rating rating, int oldCommentsSumRating, int oldCommentsCount) {
+        recalculateAndSaveRating(rating, +oldCommentsSumRating, +oldCommentsCount);
+    }
+
+    private void recalculateAndSaveRating(Rating rating, int oldCommentsSumRating, int oldCommentsCount) {
+        int newSum = rating.getRatingSum() + oldCommentsSumRating;
+        int newCount = rating.getCommentsCount() + oldCommentsCount;
         BigDecimal newAvg = BigDecimal.valueOf(newSum).divide(BigDecimal.valueOf(newCount), 2, RoundingMode.HALF_UP);
 
         rating.setRatingSum(newSum);
