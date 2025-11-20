@@ -28,11 +28,18 @@ public class SellerService {
     }
 
     @Transactional
-    public SellerProfileReadDto create(SellerProfileCreateDto seller, Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User not found"));
+    public SellerProfileReadDto createSellerProfile(SellerProfileCreateDto seller, Long userId) {
+        return mapToReadDto(create(seller, userId));
+    }
 
-        if (user.getSellerProfile() != null) {
-            throw new DuplicateEntityException("Seller Profile already exists");
+    public SellerProfile create(SellerProfileCreateDto seller, Long userId) {
+        User user = null;
+        if (userId != null) {
+            user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+            if (user.getSellerProfile() != null) {
+                throw new DuplicateEntityException("Seller Profile for user already exists");
+            }
         }
 
         if (sellerProfileRepository.existsByNickname(seller.getNickname())) {
@@ -45,7 +52,9 @@ public class SellerService {
             sellerProfile.setDescription(seller.getDescription().trim());
         }
         sellerProfile.setStatus(Status.PENDING);
-        sellerProfile.setUser(user);
+        if (userId != null) {
+            sellerProfile.setUser(user);
+        }
 
         Rating rating = new Rating();
         rating.setAvgRating(BigDecimal.valueOf(0));
@@ -55,7 +64,7 @@ public class SellerService {
 
         sellerProfile.setRating(rating);
 
-        return mapToReadDto(sellerProfileRepository.save(sellerProfile));
+        return sellerProfileRepository.save(sellerProfile);
     }
 
     @Transactional(readOnly = true)
@@ -67,17 +76,30 @@ public class SellerService {
         return sellerProfiles.stream().map(this::mapToReadDto).toList();
     }
 
-    @Transactional
-    public SellerProfileReadDto changeStatus(Long id,  Status status) {
+    private SellerProfile changeStatus(Long id, Status status) {
         SellerProfile sellerProfile = sellerProfileRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User not found"));
         sellerProfile.setStatus(status);
-        return mapToReadDto(sellerProfileRepository.save(sellerProfile));
+        return sellerProfile;
+    }
+
+    @Transactional
+    public SellerProfileReadDto approveSellerProfile(Long id, Status status) {
+        SellerProfile sellerProfile = changeStatus(id, status);
+        sellerProfile.getComments().forEach(comment -> comment.setVerifiedSeller(true));
+        return mapToReadDto(sellerProfile);
+    }
+
+    @Transactional
+    public SellerProfileReadDto rejectSellerProfile(Long id, Status status) {
+        SellerProfile sellerProfile = changeStatus(id, status);
+        sellerProfile.getComments().forEach(comment -> comment.setStatus(Status.REJECTED));
+        return mapToReadDto(sellerProfile);
     }
 
     private SellerProfileReadDto mapToReadDto(SellerProfile sellerProfile) {
         return new SellerProfileReadDto(
                 sellerProfile.getId(),
-                new UserReadDto(
+                sellerProfile.getUser() == null ? new UserReadDto() : new UserReadDto(
                         sellerProfile.getUser().getId(),
                         sellerProfile.getUser().getFirstName(),
                         sellerProfile.getUser().getLastName(),

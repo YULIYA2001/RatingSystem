@@ -30,7 +30,7 @@ public class SellerController {
     public ResponseEntity<SellerProfileReadDto> createSellerProfile(@RequestBody SellerProfileCreateDto sellerCreateDto) {
         // get authorized userId
         Long userId = 3L;
-        return new ResponseEntity<>(sellerService.create(sellerCreateDto, userId), HttpStatus.CREATED);
+        return new ResponseEntity<>(sellerService.createSellerProfile(sellerCreateDto, userId), HttpStatus.CREATED);
     }
 
     @GetMapping
@@ -42,13 +42,13 @@ public class SellerController {
     @PostMapping("/{id}/approve")
     // @PreAuthorize(ADMIN)
     public ResponseEntity<SellerProfileReadDto> approveSellerProfile(@PathVariable Long id) {
-        return new ResponseEntity<>(sellerService.changeStatus(id, Status.APPROVED), HttpStatus.OK);
+        return new ResponseEntity<>(sellerService.approveSellerProfile(id, Status.APPROVED), HttpStatus.OK);
     }
 
     @PostMapping("/{id}/reject")
     // @PreAuthorize(ADMIN)
     public ResponseEntity<SellerProfileReadDto> rejectSellerProfile(@PathVariable Long id) {
-        return new ResponseEntity<>(sellerService.changeStatus(id, Status.REJECTED), HttpStatus.OK);
+        return new ResponseEntity<>(sellerService.rejectSellerProfile(id, Status.REJECTED), HttpStatus.OK);
     }
 
     // TODO update delete

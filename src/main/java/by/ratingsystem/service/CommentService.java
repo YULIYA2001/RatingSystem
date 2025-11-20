@@ -1,5 +1,6 @@
 package by.ratingsystem.service;
 
+import by.ratingsystem.dto.CommentAndSellerCreateDto;
 import by.ratingsystem.dto.CommentCreateDto;
 import by.ratingsystem.dto.CommentFullReadDto;
 import by.ratingsystem.dto.CommentReadDto;
@@ -31,15 +32,17 @@ public class CommentService {
     private final UserRepository userRepository;
     private final SellerProfileRepository sellerProfileRepository;
     private final RatingService ratingService;
+    private final SellerService sellerService;
 
 
     private static final Long ANONYM = 0L;  // TODO extract
 
-    public CommentService(CommentRepository commentRepository, UserRepository userRepository, SellerProfileRepository sellerProfileRepository, RatingService ratingService) {
+    public CommentService(CommentRepository commentRepository, UserRepository userRepository, SellerProfileRepository sellerProfileRepository, RatingService ratingService, SellerService sellerService) {
         this.commentRepository = commentRepository;
         this.userRepository = userRepository;
         this.sellerProfileRepository = sellerProfileRepository;
         this.ratingService = ratingService;
+        this.sellerService = sellerService;
     }
 
     @Transactional
@@ -68,6 +71,25 @@ public class CommentService {
             comment.setAuthor(author);
             comment.setVerifiedSeller(true);
         }
+
+        return mapToFullReadDto(commentRepository.save(comment));
+    }
+
+    @Transactional
+    public CommentFullReadDto createWithNewSellerProfile(CommentAndSellerCreateDto dto) {
+        SellerProfile seller = sellerService.create(dto.getSellerDto(), null);
+
+        CommentCreateDto commentDto = dto.getCommentDto();
+
+        User author = userRepository.findById(commentDto.getAuthorId()).orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        Comment comment = new Comment();
+        comment.setMessage(commentDto.getMessage());
+        comment.setRatingMark(commentDto.getRatingMark());
+        comment.setStatus(Status.PENDING);
+        comment.setSeller(seller);
+        comment.setAuthor(author);
+        comment.setVerifiedSeller(false);
 
         return mapToFullReadDto(commentRepository.save(comment));
     }
@@ -126,7 +148,7 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public List<CommentFullReadDto> getAll(Long sellerId, Status status) {
+    public List<CommentFullReadDto> getAll(Long sellerId, Boolean verifiedSeller, Status status) {
         List<Comment> comments;
 
         if (sellerId != null) {
@@ -141,6 +163,10 @@ public class CommentService {
             comments = status != null
                     ? commentRepository.findByStatusOrderByUpdatedAtDesc(status)
                     : commentRepository.findAllByOrderByUpdatedAtDesc();
+        }
+
+        if (verifiedSeller != null) {
+            comments = comments.stream().filter(comment -> comment.isVerifiedSeller() == verifiedSeller).toList();
         }
 
         return comments.stream().map(this::mapToFullReadDto).toList();
@@ -198,9 +224,9 @@ public class CommentService {
 
     @Transactional
     public List<CommentFullReadDto> changeStatus(List<Long> ids, Status status) {
-        List<Comment> comments = commentRepository.findByIdInAndStatus(ids, Status.PENDING);
+        List<Comment> comments = commentRepository.findByIdInAndStatusAndVerifiedSeller(ids, Status.PENDING, true);
         if (comments.isEmpty()) {
-            throw new EntityNotFoundException("No PENDING comment was found");
+            throw new EntityNotFoundException("No PENDING comment with verified seller was found. First verify sellers");
         }
 
         comments.forEach(comment -> comment.setStatus(status));

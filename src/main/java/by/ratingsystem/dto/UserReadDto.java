@@ -10,6 +10,8 @@ public class UserReadDto {
     private LocalDateTime createdDate;
     private boolean verified;
 
+    public UserReadDto(){}
+
     public UserReadDto(Long id, String firstName, String lastName, String email,
                        LocalDateTime createdDate, boolean verified) {
         this.id = id;

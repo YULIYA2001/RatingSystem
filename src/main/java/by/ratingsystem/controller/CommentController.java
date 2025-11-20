@@ -1,5 +1,6 @@
 package by.ratingsystem.controller;
 
+import by.ratingsystem.dto.CommentAndSellerCreateDto;
 import by.ratingsystem.dto.CommentFullReadDto;
 import by.ratingsystem.model.Status;
 import by.ratingsystem.service.CommentService;
@@ -26,9 +27,17 @@ public class CommentController {
     @GetMapping
 //    @PreAuthorize(ADMIN)
     public ResponseEntity<List<CommentFullReadDto>> getSellerComments(@RequestParam(required = false) Long sellerId,
+                                                                      @RequestParam(required = false) Boolean verifiedSeller,
                                                                       @RequestParam(required = false) Status status) {
-        return new ResponseEntity<>(commentService.getAll(sellerId, status), HttpStatus.OK);
+        return new ResponseEntity<>(commentService.getAll(sellerId, verifiedSeller, status), HttpStatus.OK);
     }
+
+    @PostMapping
+    //    @PreAuthorize(ANONYM)
+    public ResponseEntity<CommentFullReadDto> createCommentWithNewSellerProfile(@RequestBody CommentAndSellerCreateDto dto) {
+        return new ResponseEntity<>(commentService.createWithNewSellerProfile(dto), HttpStatus.OK);
+    }
+
 
     @PostMapping("/approve")
     //    @PreAuthorize(ADMIN)
