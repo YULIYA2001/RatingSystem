@@ -1,13 +1,41 @@
 spring:
+  config:
+    import: "optional:classpath:database.properties"
   application:
     name: RatingSystem
   datasource:
-    url: jdbc:postgresql://localhost:5432/rating_system
-    username: rating_system_user
-    password: ***
+    url: ${db.url}
+    username: ${db.username}
+    password: ${db.password}
     driver-class-name: org.postgresql.Driver
   jpa:
-    hibernate.ddl-auto: validate
+    hibernate:
+      ddl-auto: validate
     show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
 
-#    ddl-auto: none
+logging:
+  level:
+    org.springframework.orm.jpa.JpaTransactionManager: DEBUG
+    org.springframework.transaction.interceptor: TRACE
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+  sql:
+    init:
+      mode: always

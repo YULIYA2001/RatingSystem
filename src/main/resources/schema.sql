@@ -1,4 +1,4 @@
-DROP TABLE users, seller_profiles, comments, ratings, games, game_objects;
+DROP TABLE IF EXISTS users, seller_profiles, comments, ratings, games, game_objects;
 
 -- DROP TYPE role, status;
 -- CREATE TYPE role AS ENUM ('ANONYM', 'SELLER', 'ADMIN');

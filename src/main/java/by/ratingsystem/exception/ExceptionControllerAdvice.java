@@ -14,6 +14,7 @@ public class ExceptionControllerAdvice {
         return ResponseEntity.badRequest().body(exp.getMessage());
     }
 
+    // TODO import AccessDeniedException from security
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<String> handleException(AccessDeniedException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
