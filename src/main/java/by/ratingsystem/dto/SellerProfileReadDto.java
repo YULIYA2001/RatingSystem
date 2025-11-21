@@ -3,28 +3,27 @@ package by.ratingsystem.dto;
 import java.time.LocalDateTime;
 
 public class SellerProfileReadDto extends ShortSellerProfileReadDto {
-    private UserReadDto user;
+    private Long userId;
     private String description;
     private LocalDateTime createdDate;
-    private String status;
-    private String rating;
+    private String avgRating;
+    private int reviewsCount;
 
-    public SellerProfileReadDto(Long id, String nickname, UserReadDto user, String description,
-                                LocalDateTime createdDate, String status, String rating) {
+    public SellerProfileReadDto(Long id, String nickname, Long userId, String description, LocalDateTime createdDate, String avgRating, int reviewsCount) {
         super(id, nickname);
-        this.user = user;
+        this.userId = userId;
         this.description = description;
         this.createdDate = createdDate;
-        this.status = status;
-        this.rating = rating;
+        this.avgRating = avgRating;
+        this.reviewsCount = reviewsCount;
     }
 
-    public UserReadDto getUser() {
-        return user;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setUser(UserReadDto user) {
-        this.user = user;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public String getDescription() {
@@ -35,14 +34,6 @@ public class SellerProfileReadDto extends ShortSellerProfileReadDto {
         this.description = description;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
     public LocalDateTime getCreatedDate() {
         return createdDate;
     }
@@ -51,11 +42,19 @@ public class SellerProfileReadDto extends ShortSellerProfileReadDto {
         this.createdDate = createdDate;
     }
 
-    public String getRating() {
-        return rating;
+    public String getAvgRating() {
+        return avgRating;
     }
 
-    public void setRating(String rating) {
-        this.rating = rating;
+    public void setAvgRating(String avgRating) {
+        this.avgRating = avgRating;
+    }
+
+    public int getReviewsCount() {
+        return reviewsCount;
+    }
+
+    public void setReviewsCount(int reviewsCount) {
+        this.reviewsCount = reviewsCount;
     }
 }
