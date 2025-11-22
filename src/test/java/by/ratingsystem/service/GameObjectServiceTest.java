@@ -12,8 +12,14 @@ import by.ratingsystem.repository.GameRepository;
 import by.ratingsystem.repository.SellerProfileRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -28,6 +34,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class GameObjectServiceTest {
     @Mock
     private GameObjectRepository gameObjectRepository;
@@ -47,6 +54,8 @@ class GameObjectServiceTest {
     private static final String ANY_STRING = "";
 
     @Test
+    @Order(1)
+    @DisplayName("Failed: Game object creation by user without Seller profile")
     void createGameObjectFailedWithSellerNotFoundTest() {
         Long userId = ANY_ID;
         GameObjectCreateDto gameObjectCreateDto = buildGameObjectDtoWithGame(true);
@@ -57,9 +66,13 @@ class GameObjectServiceTest {
                 EntityNotFoundException.class,
                 () -> gameObjectService.create(userId, gameObjectCreateDto)
         );
+
+        //TODO add error text check after refactoring assertEquals("text", exception.getMessage());
     }
 
     @Test
+    @Order(1)
+    @DisplayName("Failed: Game object creation by user with seller profile but for not existing Game")
     void createGameObjectFailedWithExistingGameNotFoundTest() {
         Long userId = ANY_ID;
         GameObjectCreateDto gameObjectCreateDto = buildGameObjectDtoWithGame(true);
@@ -76,6 +89,8 @@ class GameObjectServiceTest {
     }
 
     @Test
+    @Order(1)
+    @DisplayName("Succeeded: Game object creation by user with seller profile and for existing Game")
     void createGameObjectSucceededWithExistingGameTest() {
         Long userId = ANY_ID;
         GameObjectCreateDto gameObjectCreateDto = buildGameObjectDtoWithGame(true);
@@ -96,6 +111,8 @@ class GameObjectServiceTest {
     }
 
     @Test
+    @Order(1)
+    @DisplayName("Failed: Game object (with new Game) creation by user with seller profile and duplicating Game name")
     void createGameObjectAndGameFailedWithDuplicateGameNameTest() {
         Long userId = ANY_ID;
         GameObjectCreateDto gameObjectCreateDto = buildGameObjectDtoWithGame(false);
@@ -112,6 +129,8 @@ class GameObjectServiceTest {
     }
 
     @Test
+    @Order(1)
+    @DisplayName("Succeeded: Game object (with new Game) creation by user with seller profile")
     void createGameObjectAndGameSucceededTest() {
         Long userId = ANY_ID;
         GameObjectCreateDto gameObjectCreateDto = buildGameObjectDtoWithGame(false);
@@ -130,10 +149,11 @@ class GameObjectServiceTest {
         verify(gameObjectRepository).save(any(GameObject.class));
     }
 
-    @Test
-    void deleteGameObjectFailedWithNotFoundTest() {
-        Long id = ANY_ID;
-
+    @ParameterizedTest(name = "{index}: id = {0}")
+    @Order(2)
+    @DisplayName("Failed: Game object deletion with not existing id")
+    @ValueSource(longs = {1L, 2L})
+    void deleteGameObjectFailedWithNotFoundTest(Long id) {
         when(gameObjectRepository.findById(id)).thenReturn(Optional.empty());
 
         Assertions.assertThrows(
@@ -143,6 +163,8 @@ class GameObjectServiceTest {
     }
 
     @Test
+    @Order(2)
+    @DisplayName("Succeeded: Game object deletion with Game deletion (no related Game objects left)")
     void deleteGameObjectAndDeleteGameSucceededTest() {
         Long id = ANY_ID;
 
@@ -159,6 +181,8 @@ class GameObjectServiceTest {
     }
 
     @Test
+    @Order(2)
+    @DisplayName("Succeeded: Game object deletion without Game deletion (Related game objects remain)")
     void deleteGameObjectSucceededTest() {
         Long id = ANY_ID;
 
