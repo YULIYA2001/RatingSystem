@@ -1,4 +1,4 @@
-package by.ratingsystem.service;
+package by.ratingsystem.unit.service;
 
 import by.ratingsystem.dto.GameDto;
 import by.ratingsystem.dto.GameObjectCreateDto;
@@ -10,6 +10,7 @@ import by.ratingsystem.model.SellerProfile;
 import by.ratingsystem.repository.GameObjectRepository;
 import by.ratingsystem.repository.GameRepository;
 import by.ratingsystem.repository.SellerProfileRepository;
+import by.ratingsystem.service.GameObjectService;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;

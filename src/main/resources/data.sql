@@ -14,6 +14,11 @@ VALUES (2, 'Test seller 1', 'Test seller 1 description', 'APPROVED');
 INSERT INTO ratings (seller_id, avg_rating, rating_sum, comments_count)
 VALUES (1, 4.5, 9, 2);
 
+INSERT INTO games (name, description)
+VALUES ('Test game', 'Test game description');
+INSERT INTO game_objects (title, description, seller_id, game_id)
+VALUES ('Test game object', 'Test game object description', 1, 1);
+
 INSERT INTO comments (author_id, seller_id, message, rating_mark, status)
 VALUES (0, 1, 'Test comment 1', 5, 'APPROVED');
 INSERT INTO comments (author_id, seller_id, message, rating_mark, status)
