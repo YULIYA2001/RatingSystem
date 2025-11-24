@@ -1,7 +1,7 @@
 package by.ratingsystem.integration.controller;
 
-import by.ratingsystem.dto.GameDto;
-import by.ratingsystem.dto.GameObjectCreateDto;
+import by.ratingsystem.dto.gameobject.GameDto;
+import by.ratingsystem.dto.gameobject.GameObjectCreateDto;
 import by.ratingsystem.model.Game;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;

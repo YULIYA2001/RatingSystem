@@ -1,8 +1,8 @@
 package by.ratingsystem.unit.service;
 
-import by.ratingsystem.dto.GameDto;
-import by.ratingsystem.dto.GameObjectCreateDto;
-import by.ratingsystem.dto.GameObjectReadDto;
+import by.ratingsystem.dto.gameobject.GameDto;
+import by.ratingsystem.dto.gameobject.GameObjectCreateDto;
+import by.ratingsystem.dto.gameobject.GameObjectReadDto;
 import by.ratingsystem.exception.DuplicateEntityException;
 import by.ratingsystem.model.Game;
 import by.ratingsystem.model.GameObject;

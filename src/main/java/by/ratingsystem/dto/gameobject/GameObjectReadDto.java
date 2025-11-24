@@ -1,4 +1,4 @@
-package by.ratingsystem.dto;
+package by.ratingsystem.dto.gameobject;
 
 import by.ratingsystem.dto.seller.ShortSellerProfileReadDto;
 

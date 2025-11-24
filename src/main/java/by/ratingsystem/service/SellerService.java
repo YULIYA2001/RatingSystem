@@ -128,6 +128,11 @@ public class SellerService {
         return topCountSellers.stream().map(this::mapToFullReadDto).toList();
     }
 
+    public SellerProfile findByUserId(Long userId) {
+        return sellerProfileRepository.findByUserId(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Seller with id=%d not found".formatted(userId)));
+    }
+
     private SellerProfile changeStatus(Long id, Status status) {
         SellerProfile sellerProfile = sellerProfileRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Seller with id=%d not found".formatted(id)));

@@ -1,10 +1,11 @@
 package by.ratingsystem.controller;
 
-import by.ratingsystem.dto.GameDto;
-import by.ratingsystem.dto.GameObjectCreateDto;
-import by.ratingsystem.dto.GameObjectReadDto;
+import by.ratingsystem.dto.gameobject.GameDto;
+import by.ratingsystem.dto.gameobject.GameObjectCreateDto;
+import by.ratingsystem.dto.gameobject.GameObjectReadDto;
 import by.ratingsystem.security.jwt.JwtUserDetails;
 import by.ratingsystem.service.GameObjectService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,6 +26,7 @@ import java.util.List;
 public class GameObjectController {
     private final GameObjectService gameObjectService;
 
+    @Autowired
     public GameObjectController(GameObjectService gameObjectService) {
         this.gameObjectService = gameObjectService;
     }
@@ -58,7 +60,8 @@ public class GameObjectController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<HttpStatus> delete(@PathVariable Long id, @AuthenticationPrincipal JwtUserDetails authenticatedUser) {
+    public ResponseEntity<HttpStatus> delete(@PathVariable Long id,
+                                             @AuthenticationPrincipal JwtUserDetails authenticatedUser) {
         Long userId = authenticatedUser.getId();
         gameObjectService.delete(userId, id);
         return new ResponseEntity<>(HttpStatus.OK);
