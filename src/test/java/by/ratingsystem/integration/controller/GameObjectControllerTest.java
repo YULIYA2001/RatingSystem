@@ -3,6 +3,7 @@ package by.ratingsystem.integration.controller;
 import by.ratingsystem.dto.gameobject.GameDto;
 import by.ratingsystem.dto.gameobject.GameObjectCreateDto;
 import by.ratingsystem.model.Game;
+import by.ratingsystem.security.jwt.JwtUserDetails;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,10 +13,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -32,7 +37,7 @@ class GameObjectControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    private static final int EXPECTED_GAMES_COUNT = 1;
+    private static final int EXPECTED_GAMES_COUNT = 2;
     private static final Long NOT_EXISTED_GAME_OBJECT_ID = 999L;
     private static final String NEW_TITLE = "New title";
     private static final String NEW_DESCRIPTION = "New description";
@@ -63,11 +68,13 @@ class GameObjectControllerTest {
     @ParameterizedTest(name = "{index}: id = {0}, expectedStatus = {1}")
     @CsvSource({
             "1, 200",
-            "999, 404"
+            "999, 404",
+            "2, 404"
     })
     @DisplayName("Delete game object")
     void deleteGameObjectTest(Long id, int expectedStatus) throws Exception {
-        mockMvc.perform(delete("/object/{id}", id))
+        mockMvc.perform(delete("/object/{id}", id)
+                        .with(user(buildAuthorizedUser())))
                 .andDo(print())
                 .andExpect(status().is(expectedStatus));
     }
@@ -76,6 +83,7 @@ class GameObjectControllerTest {
     @DisplayName("Update not existed game object")
     void updateGameObjectFailedNotFoundTest() throws Exception {
         mockMvc.perform(put("/object/{id}", NOT_EXISTED_GAME_OBJECT_ID)
+                .with(user(buildAuthorizedUser()))
                         .content(asJsonString(
                                 new GameObjectCreateDto(
                                         NEW_TITLE,
@@ -93,5 +101,14 @@ class GameObjectControllerTest {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static JwtUserDetails buildAuthorizedUser() {
+        return new JwtUserDetails(
+                2L,
+                "seller@gmail.com",
+                "seller",
+                List.of(new SimpleGrantedAuthority("ROLE_SELLER"))
+        );
     }
 }

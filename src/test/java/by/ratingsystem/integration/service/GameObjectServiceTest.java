@@ -16,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -36,22 +37,37 @@ class GameObjectServiceTest {
     private static final Long EXISTING_GAME_OBJECT_ID = 1L;
     private static final Long EXISTING_GAME_ID = 1L;
     private static final Long EXISTING_SELLER_ID = 1L;
+    private static final Long OWNER_USER_ID = 2L;
+    private static final Long NOT_OWNER_USER_ID = 3L;
     private static final String TITLE = "Title";
 
     @ParameterizedTest(name = "{index}: id = {0}")
     @DisplayName("Failed: Game object deletion with not existing id")
     @ValueSource(longs = {111L, 222L})
-    void deleteGameObjectFailedWithNotFoundTest(Long id) {
-        assertThrows(
+    void deleteGameObjectFailedWithNotFoundObjTest(Long id) {
+        Exception result = assertThrows(
                 EntityNotFoundException.class,
-                () -> gameObjectService.delete(id)
+                () -> gameObjectService.delete(null, id)
         );
+
+        assertEquals("GameObject with id=%d not found".formatted(id), result.getMessage());
+    }
+
+    @Test
+    @DisplayName("Failed: Game object deletion with existing id by not owner user")
+    void deleteGameObjectFailedWithNotFoundObjForUserTest() {
+        Exception result = assertThrows(
+                EntityNotFoundException.class,
+                () -> gameObjectService.delete(NOT_OWNER_USER_ID, EXISTING_GAME_OBJECT_ID)
+        );
+
+        assertEquals("You can delete only your game objects", result.getMessage());
     }
 
     @Test
     @DisplayName("Succeeded: Game object deletion with Game deletion (no related Game objects left)")
     void deleteGameObjectAndDeleteGameSucceededTest() {
-        gameObjectService.delete(EXISTING_GAME_OBJECT_ID);
+        gameObjectService.delete(OWNER_USER_ID, EXISTING_GAME_OBJECT_ID);
 
         assertFalse(gameObjectRepository.existsById(EXISTING_GAME_OBJECT_ID), "Game object should not exist");
         assertFalse(gameRepository.existsById(EXISTING_GAME_ID), "Game should not exist");
@@ -71,7 +87,7 @@ class GameObjectServiceTest {
         gameObject.setSeller(sellerProfile);
         gameObjectRepository.save(gameObject);
 
-        gameObjectService.delete(EXISTING_GAME_OBJECT_ID);
+        gameObjectService.delete(OWNER_USER_ID, EXISTING_GAME_OBJECT_ID);
 
         assertFalse(gameObjectRepository.existsById(EXISTING_GAME_OBJECT_ID), "Game object should not exist");
         assertTrue(gameRepository.findById(EXISTING_GAME_ID).isPresent(),

@@ -128,7 +128,7 @@ public class GameObjectService {
 
     private GameObject getById(Long id) {
         return gameObjectRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("GameObject with id {%s} not found".formatted(id)));
+                .orElseThrow(() -> new EntityNotFoundException("GameObject with id=%d not found".formatted(id)));
     }
 
     private Game getGameFromGameObjectDto(GameObjectCreateDto gameObjectCreateDto) {

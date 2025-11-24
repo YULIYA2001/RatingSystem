@@ -7,10 +7,11 @@ import by.ratingsystem.exception.DuplicateEntityException;
 import by.ratingsystem.model.Game;
 import by.ratingsystem.model.GameObject;
 import by.ratingsystem.model.SellerProfile;
+import by.ratingsystem.model.User;
 import by.ratingsystem.repository.GameObjectRepository;
 import by.ratingsystem.repository.GameRepository;
-import by.ratingsystem.repository.SellerProfileRepository;
 import by.ratingsystem.service.GameObjectService;
+import by.ratingsystem.service.SellerService;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -28,6 +29,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
@@ -41,7 +43,7 @@ class GameObjectServiceTest {
     private GameObjectRepository gameObjectRepository;
 
     @Mock
-    private SellerProfileRepository sellerProfileRepository;
+    private SellerService sellerService;
 
     @Mock
     private GameRepository gameRepository;
@@ -60,15 +62,17 @@ class GameObjectServiceTest {
     void createGameObjectFailedWithSellerNotFoundTest() {
         Long userId = ANY_ID;
         GameObjectCreateDto gameObjectCreateDto = buildGameObjectDtoWithGame(true);
+        String expMessage = "Seller profile with id=%d not found".formatted(userId);
 
-        when(sellerProfileRepository.findByUserId(userId)).thenReturn(Optional.empty());
+        when(sellerService.findByUserId(userId))
+                .thenThrow(new EntityNotFoundException(expMessage));
 
-        Assertions.assertThrows(
+        EntityNotFoundException result = Assertions.assertThrows(
                 EntityNotFoundException.class,
                 () -> gameObjectService.create(userId, gameObjectCreateDto)
         );
 
-        //TODO add error text check after refactoring assertEquals("text", exception.getMessage());
+        assertEquals(expMessage, result.getMessage());
     }
 
     @Test
@@ -80,13 +84,15 @@ class GameObjectServiceTest {
 
         SellerProfile existedSellerProfile = new SellerProfile();
 
-        when(sellerProfileRepository.findByUserId(userId)).thenReturn(Optional.of(existedSellerProfile));
+        when(sellerService.findByUserId(userId)).thenReturn(existedSellerProfile);
         when(gameRepository.findById(gameObjectCreateDto.getGame().getId())).thenReturn(Optional.empty());
 
-        Assertions.assertThrows(
+        Exception result = Assertions.assertThrows(
                 EntityNotFoundException.class,
                 () -> gameObjectService.create(userId, gameObjectCreateDto)
         );
+
+        assertEquals("Game with id=%d not found".formatted(gameObjectCreateDto.getGame().getId()), result.getMessage());
     }
 
     @Test
@@ -99,9 +105,9 @@ class GameObjectServiceTest {
         SellerProfile existedSellerProfile = new SellerProfile();
         Game existedGame = buildGame();
 
-        GameObject savedGameObject = buildGameObject(ANY_ID);
+        GameObject savedGameObject = buildGameObject(ANY_ID, any());
 
-        when(sellerProfileRepository.findByUserId(userId)).thenReturn(Optional.of(existedSellerProfile));
+        when(sellerService.findByUserId(userId)).thenReturn(existedSellerProfile);
         when(gameRepository.findById(gameObjectCreateDto.getGame().getId())).thenReturn(Optional.of(existedGame));
         when(gameObjectRepository.save(any(GameObject.class))).thenReturn(savedGameObject);
 
@@ -120,7 +126,7 @@ class GameObjectServiceTest {
 
         SellerProfile existedSellerProfile = new SellerProfile();
 
-        when(sellerProfileRepository.findByUserId(userId)).thenReturn(Optional.of(existedSellerProfile));
+        when(sellerService.findByUserId(userId)).thenReturn(existedSellerProfile);
         when(gameRepository.existsByName(gameObjectCreateDto.getGame().getName())).thenReturn(true);
 
         Assertions.assertThrows(
@@ -138,9 +144,9 @@ class GameObjectServiceTest {
 
         SellerProfile existedSellerProfile = new SellerProfile();
 
-        GameObject savedGameObject = buildGameObject(ANY_ID);
+        GameObject savedGameObject = buildGameObject(ANY_ID, any());
 
-        when(sellerProfileRepository.findByUserId(userId)).thenReturn(Optional.of(existedSellerProfile));
+        when(sellerService.findByUserId(userId)).thenReturn(existedSellerProfile);
         when(gameRepository.existsByName(gameObjectCreateDto.getGame().getName())).thenReturn(false);
         when(gameObjectRepository.save(any(GameObject.class))).thenReturn(savedGameObject);
 
@@ -154,28 +160,50 @@ class GameObjectServiceTest {
     @Order(2)
     @DisplayName("Failed: Game object deletion with not existing id")
     @ValueSource(longs = {1L, 2L})
-    void deleteGameObjectFailedWithNotFoundTest(Long id) {
+    void deleteGameObjectFailedWithNotFoundObjTest(Long id) {
         when(gameObjectRepository.findById(id)).thenReturn(Optional.empty());
 
-        Assertions.assertThrows(
+        Exception result = Assertions.assertThrows(
                 EntityNotFoundException.class,
-                () -> gameObjectService.delete(id)
+                () -> gameObjectService.delete(null, id)
         );
+
+        assertEquals("GameObject with id=%d not found".formatted(id),  result.getMessage());
+    }
+
+    @Test
+    @Order(2)
+    @DisplayName("Failed: Game object deletion with existing id by not owner user")
+    void deleteGameObjectFailedWithNotFoundObjForUserTest() {
+        Long userId = ANY_ID;
+        Long id = ANY_ID;
+
+        GameObject existed = buildGameObject(id, any());
+
+        when(gameObjectRepository.findById(id)).thenReturn(Optional.of(existed));
+
+        Exception result = Assertions.assertThrows(
+                EntityNotFoundException.class,
+                () -> gameObjectService.delete(userId, ANY_ID)
+        );
+
+        assertEquals("You can delete only your game objects", result.getMessage());
     }
 
     @Test
     @Order(2)
     @DisplayName("Succeeded: Game object deletion with Game deletion (no related Game objects left)")
     void deleteGameObjectAndDeleteGameSucceededTest() {
+        Long userId = ANY_ID;
         Long id = ANY_ID;
 
-        GameObject existed = buildGameObject(id);
+        GameObject existed = buildGameObject(id, userId);
         Game existedGame = existed.getGame();
 
         when(gameObjectRepository.findById(id)).thenReturn(Optional.of(existed));
         when(gameObjectRepository.countByGameId(existedGame.getId())).thenReturn(POSITIVE_NUMBER);
 
-        gameObjectService.delete(id);
+        gameObjectService.delete(userId, id);
 
         verify(gameObjectRepository).deleteById(id);
         verify(gameRepository, never()).deleteById(any());
@@ -185,15 +213,16 @@ class GameObjectServiceTest {
     @Order(2)
     @DisplayName("Succeeded: Game object deletion without Game deletion (Related game objects remain)")
     void deleteGameObjectSucceededTest() {
+        Long userId = ANY_ID;
         Long id = ANY_ID;
 
-        GameObject existed = buildGameObject(id);
+        GameObject existed = buildGameObject(id, userId);
         Game existedGame = existed.getGame();
 
         when(gameObjectRepository.findById(id)).thenReturn(Optional.of(existed));
         when(gameObjectRepository.countByGameId(existedGame.getId())).thenReturn(ZERO);
 
-        gameObjectService.delete(id);
+        gameObjectService.delete(userId, id);
 
         verify(gameObjectRepository).deleteById(id);
         verify(gameRepository).deleteById(existedGame.getId());
@@ -209,8 +238,13 @@ class GameObjectServiceTest {
         return game;
     }
 
-    private GameObject buildGameObject(Long objectId) {
+    private GameObject buildGameObject(Long objectId, Long userId) {
         Game game = buildGame();
+
+        User user = new User();
+        user.setId(userId);
+        SellerProfile sellerProfile = new SellerProfile();
+        sellerProfile.setUser(user);
 
         GameObject gameObject = new GameObject();
         gameObject.setId(objectId);
@@ -218,6 +252,7 @@ class GameObjectServiceTest {
         gameObject.setDescription(ANY_STRING);
         gameObject.setSeller(new SellerProfile());
         gameObject.setGame(game);
+        gameObject.setSeller(sellerProfile);
 
         game.getGameObjects().add(gameObject);
 
