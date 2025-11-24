@@ -43,7 +43,7 @@ public class CommentController {
             @RequestBody CommentAndSellerCreateDto dto,
             @AuthenticationPrincipal JwtUserDetails authenticatedUser
     ) {
-        Long authorId = authenticatedUser == null ? Role.getAnonymId() : authenticatedUser.getId();
+        Long authorId = authenticatedUser == null ? Role.ANONYM_ID : authenticatedUser.getId();
         return new ResponseEntity<>(commentService.createWithNewSellerProfile(authorId, dto), HttpStatus.OK);
     }
 

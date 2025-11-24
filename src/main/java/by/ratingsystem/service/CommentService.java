@@ -217,7 +217,7 @@ public class CommentService {
     }
 
     private boolean isAuthor(Long currentUserId, Long commentAuthorId) {
-        return !Objects.equals(currentUserId, Role.getAnonymId())
+        return !Objects.equals(currentUserId, Role.ANONYM_ID)
                 && Objects.equals(currentUserId, commentAuthorId);
     }
 

@@ -27,8 +27,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/sellers/{sellerId}/comments")
 public class SellersCommentController {
-    private static final Long ANONYM = Role.getAnonymId();
-
     private final CommentService commentService;
 
     public SellersCommentController(CommentService commentService) {
@@ -39,7 +37,7 @@ public class SellersCommentController {
     public ResponseEntity<CommentFullReadDto> addComment(@PathVariable Long sellerId,
                                                          @RequestBody CommentCreateDto commentDto,
                                                          @AuthenticationPrincipal JwtUserDetails authenticatedUser) {
-        Long authorId = authenticatedUser == null ? ANONYM : authenticatedUser.getId();
+        Long authorId = authenticatedUser == null ? Role.ANONYM_ID : authenticatedUser.getId();
         return new ResponseEntity<>(commentService.create(sellerId, authorId, commentDto), HttpStatus.CREATED);
     }
 
@@ -69,7 +67,7 @@ public class SellersCommentController {
             return new ResponseEntity<>(commentService.getById(sellerId, commentId, null), HttpStatus.OK);
         }
 
-        Long currentUserId = authenticatedUser == null ? ANONYM : authenticatedUser.getId();
+        Long currentUserId = authenticatedUser == null ? Role.ANONYM_ID : authenticatedUser.getId();
         return new ResponseEntity<>(commentService.getById(sellerId, commentId, currentUserId), HttpStatus.OK);
     }
 
@@ -85,7 +83,7 @@ public class SellersCommentController {
         if (isAdmin) {
             commentService.delete(sellerId, commentId, null);
         } else {
-            Long currentUserId = authenticatedUser == null ? ANONYM : authenticatedUser.getId();
+            Long currentUserId = authenticatedUser == null ? Role.ANONYM_ID : authenticatedUser.getId();
             commentService.delete(sellerId, commentId, currentUserId);
         }
 
@@ -99,7 +97,7 @@ public class SellersCommentController {
             @RequestBody CommentCreateDto commentDto,
             @AuthenticationPrincipal JwtUserDetails authenticatedUser
     ) throws AccessDeniedException {
-        Long currentUserId = authenticatedUser == null ? ANONYM : authenticatedUser.getId();
+        Long currentUserId = authenticatedUser == null ? Role.ANONYM_ID : authenticatedUser.getId();
         return new ResponseEntity<>(commentService.update(sellerId, commentDto, currentUserId), HttpStatus.OK);
     }
 }

@@ -5,7 +5,5 @@ public enum Role {
     SELLER,
     ANONYM;
 
-    public static Long getAnonymId() {
-        return 0L;
-    }
+    public static final Long ANONYM_ID = 0L;
 }
