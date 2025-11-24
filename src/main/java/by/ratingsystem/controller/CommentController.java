@@ -1,12 +1,14 @@
 package by.ratingsystem.controller;
 
-import by.ratingsystem.dto.CommentAndSellerCreateDto;
-import by.ratingsystem.dto.CommentFullReadDto;
+import by.ratingsystem.dto.comment.CommentAndSellerCreateDto;
+import by.ratingsystem.dto.comment.CommentFullReadDto;
 import by.ratingsystem.model.enums.Status;
+import by.ratingsystem.security.jwt.JwtUserDetails;
 import by.ratingsystem.service.CommentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +21,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/comments")
 public class CommentController {
+    private static final Long ANONYM = 0L;  // TODO extract
+
     private final CommentService commentService;
 
     public CommentController(CommentService commentService) {
@@ -27,15 +31,21 @@ public class CommentController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<CommentFullReadDto>> getSellerComments(@RequestParam(required = false) Long sellerId,
-                                                                      @RequestParam(required = false) Boolean verifiedSeller,
-                                                                      @RequestParam(required = false) Status status) {
+    public ResponseEntity<List<CommentFullReadDto>> getSellerComments(
+            @RequestParam(required = false) Long sellerId,
+            @RequestParam(required = false) Boolean verifiedSeller,
+            @RequestParam(required = false) Status status
+    ) {
         return new ResponseEntity<>(commentService.getAll(sellerId, verifiedSeller, status), HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<CommentFullReadDto> createCommentWithNewSellerProfile(@RequestBody CommentAndSellerCreateDto dto) {
-        return new ResponseEntity<>(commentService.createWithNewSellerProfile(dto), HttpStatus.OK);
+    public ResponseEntity<CommentFullReadDto> createCommentWithNewSellerProfile(
+            @RequestBody CommentAndSellerCreateDto dto,
+            @AuthenticationPrincipal JwtUserDetails authenticatedUser
+    ) {
+        Long authorId = authenticatedUser == null ? ANONYM : authenticatedUser.getId();
+        return new ResponseEntity<>(commentService.createWithNewSellerProfile(authorId, dto), HttpStatus.OK);
     }
 
 

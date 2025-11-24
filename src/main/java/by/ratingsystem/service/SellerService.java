@@ -50,7 +50,7 @@ public class SellerService {
             user = userService.getById(userId);
 
             if (user.getSellerProfile() != null) {
-                throw new DuplicateEntityException("Seller Profile for user already exists");
+                throw new DuplicateEntityException("Seller profile for user already exists");
             }
         }
 
@@ -130,12 +130,20 @@ public class SellerService {
 
     public SellerProfile findByUserId(Long userId) {
         return sellerProfileRepository.findByUserId(userId)
-                .orElseThrow(() -> new EntityNotFoundException("Seller with id=%d not found".formatted(userId)));
+                .orElseThrow(() -> new EntityNotFoundException("Seller profile with id=%d not found".formatted(userId)));
+    }
+
+    public SellerProfile getById(Long id) {
+        return sellerProfileRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Seller profile with id=%d not found".formatted(id)));
+    }
+
+    public boolean existsById(Long sellerId) {
+        return sellerProfileRepository.existsById(sellerId);
     }
 
     private SellerProfile changeStatus(Long id, Status status) {
-        SellerProfile sellerProfile = sellerProfileRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Seller with id=%d not found".formatted(id)));
+        SellerProfile sellerProfile = getById(id);
         sellerProfile.setStatus(status);
         return sellerProfile;
     }

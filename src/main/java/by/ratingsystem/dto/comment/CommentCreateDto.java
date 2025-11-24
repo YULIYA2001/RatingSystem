@@ -1,14 +1,12 @@
-package by.ratingsystem.dto;
+package by.ratingsystem.dto.comment;
 
 public class CommentCreateDto {
     private Long id;
-    private Long authorId;  // TODO may be take from authorization
     private String message;
     private int ratingMark;
 
-    public CommentCreateDto(Long id, Long authorId, String message, int ratingMark) {
+    public CommentCreateDto(Long id, String message, int ratingMark) {
         this.id = id;
-        this.authorId = authorId;
         this.message = message;
         this.ratingMark = ratingMark;
     }
@@ -19,14 +17,6 @@ public class CommentCreateDto {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Long getAuthorId() {
-        return authorId;
-    }
-
-    public void setAuthorId(Long authorId) {
-        this.authorId = authorId;
     }
 
     public String getMessage() {
