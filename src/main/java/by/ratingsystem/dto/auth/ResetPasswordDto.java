@@ -1,8 +1,8 @@
-package by.ratingsystem.dto;
+package by.ratingsystem.dto.auth;
 
 public class ResetPasswordDto {
     private String email;
-    private String code;
+    private String verificationCode;
     private String newPassword;
 
     public String getEmail() {
@@ -13,12 +13,12 @@ public class ResetPasswordDto {
         this.email = email;
     }
 
-    public String getCode() {
-        return code;
+    public String getVerificationCode() {
+        return verificationCode;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setVerificationCode(String verificationCode) {
+        this.verificationCode = verificationCode;
     }
 
     public String getNewPassword() {

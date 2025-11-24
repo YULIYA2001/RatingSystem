@@ -1,13 +1,12 @@
 package by.ratingsystem.controller;
 
-import by.ratingsystem.dto.AuthRequestDto;
-import by.ratingsystem.dto.CheckCodeDto;
-import by.ratingsystem.dto.JwtResponseDto;
-import by.ratingsystem.dto.RefreshTokenDto;
-import by.ratingsystem.dto.ResetPasswordDto;
+import by.ratingsystem.dto.auth.ResetPasswordDto;
+import by.ratingsystem.dto.auth.AuthRequestDto;
+import by.ratingsystem.dto.auth.AuthResponseDto;
+import by.ratingsystem.dto.auth.CheckVerificationCodeDto;
+import by.ratingsystem.dto.auth.RefreshTokenDto;
 import by.ratingsystem.dto.user.UserCreateDto;
 import by.ratingsystem.dto.user.UserReadDto;
-import by.ratingsystem.dto.VerifyUserDto;
 import by.ratingsystem.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -33,48 +32,44 @@ public class AuthController {
     }
 
     @PostMapping({"/verify"})
-    public ResponseEntity<?> verifyUser(@RequestBody VerifyUserDto verifyUserDto) {
-        try {
-            this.authService.verifyUser(verifyUserDto);
-            return ResponseEntity.ok("Account verified successfully");
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<String> verifyUser(@RequestBody CheckVerificationCodeDto checkVerificationCodeDto) {
+        authService.verifyUser(checkVerificationCodeDto);
+        return new ResponseEntity<>("Account verified successfully", HttpStatus.OK);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<JwtResponseDto> singIn(@RequestBody AuthRequestDto authDto) {
-        JwtResponseDto jwtResponseDto = authService.singIn(authDto);
-        return ResponseEntity.ok(jwtResponseDto);
+    public ResponseEntity<AuthResponseDto> singIn(@RequestBody AuthRequestDto authDto) {
+        AuthResponseDto authResponseDto = authService.singIn(authDto);
+        return new ResponseEntity<>(authResponseDto, HttpStatus.OK);
     }
 
     @PostMapping("/refresh-token")
-    public JwtResponseDto refresh(@RequestBody RefreshTokenDto refreshTokenDto) throws Exception {
-        return authService.refreshToken(refreshTokenDto);
+    public ResponseEntity<AuthResponseDto> refresh(@RequestBody RefreshTokenDto refreshTokenDto) {
+        AuthResponseDto authResponseDto = authService.refreshToken(refreshTokenDto);
+        return new ResponseEntity<>(authResponseDto, HttpStatus.OK);
     }
 
     @PostMapping({"/forgot-password"})
-    public ResponseEntity<?> resendVerificationCodeForNewPassword(@RequestBody String email) {
-        try {
-            this.authService.resendVerificationCode(email);
-            return ResponseEntity.ok("Verification code sent");
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<String> resendVerificationCodeForNewPassword(@RequestBody String email) {
+        authService.resendVerificationCode(email);
+        return new ResponseEntity<>("Verification code sent to %s".formatted(email), HttpStatus.OK);
     }
 
     @PostMapping({"/reset"})
-    public ResponseEntity<HttpStatus> resetPassword(@RequestBody ResetPasswordDto resetPasswordDto) {
-        Long userId = authService.verifyUser(new VerifyUserDto(resetPasswordDto.getEmail(), resetPasswordDto.getCode()));
+    public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordDto resetPasswordDto) {
+        Long userId = authService.verifyUser(new CheckVerificationCodeDto(
+                resetPasswordDto.getEmail(),
+                resetPasswordDto.getVerificationCode()
+        ));
         if (userId != null) {
             authService.changePassword(userId, resetPasswordDto.getNewPassword());
         }
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>("Password was changed", HttpStatus.OK);
     }
 
     @PostMapping({"/check-code"})
-    public ResponseEntity<String> checkCode(@RequestBody CheckCodeDto checkCodeDto) {
-        String msg = "Your code is " + (authService.isCodeVaild(checkCodeDto) ? "valid" : "invalid");
+    public ResponseEntity<String> checkCode(@RequestBody CheckVerificationCodeDto checkVerificationCodeDto) {
+        String msg = "Your code is " + (authService.isCodeValid(checkVerificationCodeDto) ? "valid" : "invalid");
         return new ResponseEntity<>(msg, HttpStatus.OK);
     }
 }

@@ -1,6 +1,8 @@
 package by.ratingsystem.service;
 
 import by.ratingsystem.exception.VerificationCodeException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -16,6 +18,7 @@ public class VerificationService {
 
     private final StringRedisTemplate redisTemplate;
 
+    private static final Logger LOGGER = LogManager.getLogger(VerificationService.class);
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     @Autowired
@@ -38,15 +41,24 @@ public class VerificationService {
     }
 
     public boolean verifyCode(String email, String codeInput) {
-        String key = buildKey(email);
-        String codeStored = redisTemplate.opsForValue().get(key);
+        try {
+            String key = buildKey(email);
+            String codeStored = redisTemplate.opsForValue().get(key);
 
-        return codeStored != null && codeStored.equals(codeInput);
+            return codeStored != null && codeStored.equals(codeInput);
+        } catch (Exception ex) {
+            LOGGER.error("Error verifying code for email: {}", email, ex);
+            throw new VerificationCodeException("Code verification failed. Please contact the administrator.", ex);
+        }
     }
 
     public void deleteUsedCode(String email) {
-        String key = buildKey(email);
-        redisTemplate.delete(key);
+        try {
+            String key = buildKey(email);
+            redisTemplate.delete(key);
+        } catch (Exception ex) {
+            LOGGER.error("Error deleting used code for email: {}", email, ex);
+        }
     }
 
     private String buildKey(String email) {

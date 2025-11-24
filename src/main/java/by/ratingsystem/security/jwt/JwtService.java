@@ -1,6 +1,6 @@
 package by.ratingsystem.security.jwt;
 
-import by.ratingsystem.dto.JwtResponseDto;
+import by.ratingsystem.dto.auth.AuthResponseDto;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -29,12 +29,12 @@ public class JwtService {
 
     private static final Logger LOGGER = LogManager.getLogger(JwtService.class);
 
-    public JwtResponseDto generateAuthToken(String email) {
-        return new JwtResponseDto(generateJwtToken(email), generateRefreshToken(email));
+    public AuthResponseDto generateAuthToken(String email) {
+        return new AuthResponseDto(generateJwtToken(email), generateRefreshToken(email));
     }
 
-    public JwtResponseDto refreshBaseToken(String email, String refreshToken) {
-        return new JwtResponseDto(generateJwtToken(email), refreshToken);
+    public AuthResponseDto refreshBaseToken(String email, String refreshToken) {
+        return new AuthResponseDto(generateJwtToken(email), refreshToken);
     }
 
     public String getEmailFromToken(String token) {

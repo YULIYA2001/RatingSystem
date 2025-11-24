@@ -1,12 +1,12 @@
-package by.ratingsystem.dto;
+package by.ratingsystem.dto.auth;
 
-public class JwtResponseDto {
+public class AuthResponseDto {
     private String token;
     private String refreshToken;
 
-    public JwtResponseDto(){}
+    public AuthResponseDto(){}
 
-    public JwtResponseDto(String token, String refreshToken) {
+    public AuthResponseDto(String token, String refreshToken) {
         this.token = token;
         this.refreshToken = refreshToken;
     }
