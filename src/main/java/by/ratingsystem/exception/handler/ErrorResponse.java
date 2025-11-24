@@ -2,16 +2,13 @@ package by.ratingsystem.exception.handler;
 
 import java.time.LocalDateTime;
 
-public class ErrorResponse {
-    private final int status;
-    private final String error;
-    private final String message;
-    private final LocalDateTime timestamp;
-
+public record ErrorResponse(
+        int status,
+        String error,
+        String message,
+        LocalDateTime timestamp
+) {
     public ErrorResponse(int status, String error, String message) {
-        this.status = status;
-        this.error = error;
-        this.message = message;
-        this.timestamp = LocalDateTime.now();
+        this(status, error, message, LocalDateTime.now());
     }
 }
