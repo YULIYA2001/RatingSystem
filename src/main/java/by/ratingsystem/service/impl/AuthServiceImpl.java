@@ -2,11 +2,12 @@ package by.ratingsystem.service.impl;
 
 import by.ratingsystem.dto.AuthRequestDto;
 import by.ratingsystem.dto.CheckCodeDto;
-import by.ratingsystem.dto.JwtAuthenticationDto;
+import by.ratingsystem.dto.JwtResponseDto;
 import by.ratingsystem.dto.RefreshTokenDto;
 import by.ratingsystem.dto.UserCraeteDto;
 import by.ratingsystem.dto.UserReadDto;
 import by.ratingsystem.dto.VerifyUserDto;
+import by.ratingsystem.exception.JwtAuthenticationException;
 import by.ratingsystem.exception.VerificationCodeException;
 import by.ratingsystem.model.Role;
 import by.ratingsystem.model.User;
@@ -86,7 +87,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public JwtAuthenticationDto singIn(AuthRequestDto authDto) throws AuthenticationException {
+    public JwtResponseDto singIn(AuthRequestDto authDto) throws AuthenticationException {
         User user = userRepository.findByEmail(authDto.getEmail()).orElseThrow(() -> new AuthenticationException("Email or password is not correct"));;
         if (!passwordEncoder.matches(authDto.getPassword(), user.getPassword())) {
             throw new AuthenticationException("Email or password is not correct");
@@ -98,13 +99,13 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public JwtAuthenticationDto refreshToken(RefreshTokenDto refreshTokenDto) throws Exception {
+    public JwtResponseDto refreshToken(RefreshTokenDto refreshTokenDto) throws Exception {
         String refreshToken = refreshTokenDto.getRefreshToken();
         if (refreshToken != null && jwtService.validateJwtToken(refreshToken)) {
             User user = findByEmail(jwtService.getEmailFromToken(refreshToken));
             return jwtService.refreshBaseToken(user.getEmail(), refreshToken);
         }
-        throw new AuthenticationException("Invalid refresh token");
+        throw new JwtAuthenticationException("Invalid refresh token");
     }
 
     private User findByEmail(String email) {

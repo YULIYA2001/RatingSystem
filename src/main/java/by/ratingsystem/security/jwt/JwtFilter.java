@@ -1,10 +1,10 @@
 package by.ratingsystem.security.jwt;
 
-import by.ratingsystem.security.JwtUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,6 +19,7 @@ public class JwtFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final JwtUserDetailsService jwtUserDetailsService;
 
+    @Autowired
     public JwtFilter(JwtService jwtService, JwtUserDetailsService jwtUserDetailsService) {
         this.jwtService = jwtService;
         this.jwtUserDetailsService = jwtUserDetailsService;
@@ -33,14 +34,16 @@ public class JwtFilter extends OncePerRequestFilter {
             setCustomUserDetailsToSecurityContextHolder(token);
         }
         filterChain.doFilter(request, response);
-
     }
 
     private void setCustomUserDetailsToSecurityContextHolder(String token) {
         String email = jwtService.getEmailFromToken(token);
         JwtUserDetails jwtUserDetails = (JwtUserDetails) jwtUserDetailsService.loadUserByUsername(email);
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(jwtUserDetails,
-                null, jwtUserDetails.getAuthorities());
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                jwtUserDetails,
+                null,
+                jwtUserDetails.getAuthorities()
+        );
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 

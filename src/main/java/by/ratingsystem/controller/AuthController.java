@@ -2,7 +2,7 @@ package by.ratingsystem.controller;
 
 import by.ratingsystem.dto.AuthRequestDto;
 import by.ratingsystem.dto.CheckCodeDto;
-import by.ratingsystem.dto.JwtAuthenticationDto;
+import by.ratingsystem.dto.JwtResponseDto;
 import by.ratingsystem.dto.RefreshTokenDto;
 import by.ratingsystem.dto.ResetPasswordDto;
 import by.ratingsystem.dto.UserCraeteDto;
@@ -43,17 +43,17 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<JwtAuthenticationDto> singIn(@RequestBody AuthRequestDto authDto) {
+    public ResponseEntity<JwtResponseDto> singIn(@RequestBody AuthRequestDto authDto) {
         try {
-            JwtAuthenticationDto jwtAuthenticationDto = authService.singIn(authDto);
-            return ResponseEntity.ok(jwtAuthenticationDto);
+            JwtResponseDto jwtResponseDto = authService.singIn(authDto);
+            return ResponseEntity.ok(jwtResponseDto);
         } catch (javax.naming.AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
     }
 
     @PostMapping("/refresh-token")
-    public JwtAuthenticationDto refresh(@RequestBody RefreshTokenDto refreshTokenDto) throws Exception {
+    public JwtResponseDto refresh(@RequestBody RefreshTokenDto refreshTokenDto) throws Exception {
         return authService.refreshToken(refreshTokenDto);
     }
 

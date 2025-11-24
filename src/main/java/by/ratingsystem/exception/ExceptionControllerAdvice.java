@@ -51,6 +51,12 @@ public class ExceptionControllerAdvice {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
     }
 
+    @ExceptionHandler(JwtAuthenticationException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN) // TODO another status
+    public ResponseEntity<String> handleException(JwtAuthenticationException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
+    }
+
     // not do like this
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleException(Exception ex) {

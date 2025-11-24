@@ -1,6 +1,6 @@
 package by.ratingsystem.security.jwt;
 
-import by.ratingsystem.dto.JwtAuthenticationDto;
+import by.ratingsystem.dto.JwtResponseDto;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -18,9 +18,6 @@ import java.util.Date;
 
 @Component
 public class JwtService {
-
-    private static final Logger LOGGER = LogManager.getLogger(JwtService.class);
-
     @Value("${jwt.token.secret}")
     private String jwtSecret;
 
@@ -30,18 +27,14 @@ public class JwtService {
     @Value("${jwt.token.refresh-expired}")
     private long jwtRefreshExpiredMs;
 
-    public JwtAuthenticationDto generateAuthToken(String email) {
-        JwtAuthenticationDto jwtDto = new JwtAuthenticationDto();
-        jwtDto.setToken(generateJwtToken(email));
-        jwtDto.setRefreshToken(generateRefreshToken(email));
-        return jwtDto;
+    private static final Logger LOGGER = LogManager.getLogger(JwtService.class);
+
+    public JwtResponseDto generateAuthToken(String email) {
+        return new JwtResponseDto(generateJwtToken(email), generateRefreshToken(email));
     }
 
-    public JwtAuthenticationDto refreshBaseToken(String email, String refreshToken) {
-        JwtAuthenticationDto jwtDto = new JwtAuthenticationDto();
-        jwtDto.setToken(generateJwtToken(email));
-        jwtDto.setRefreshToken(refreshToken);
-        return jwtDto;
+    public JwtResponseDto refreshBaseToken(String email, String refreshToken) {
+        return new JwtResponseDto(generateJwtToken(email), refreshToken);
     }
 
     public String getEmailFromToken(String token) {
@@ -61,15 +54,15 @@ public class JwtService {
                     .parseSignedClaims(token)
                     .getPayload();
             return true;
-        }catch (ExpiredJwtException expEx){
+        } catch (ExpiredJwtException expEx) {
             LOGGER.error("Expired JwtException", expEx);
-        }catch (UnsupportedJwtException expEx){
+        } catch (UnsupportedJwtException expEx) {
             LOGGER.error("Unsupported JwtException", expEx);
-        }catch (MalformedJwtException expEx){
+        } catch (MalformedJwtException expEx) {
             LOGGER.error("Malformed JwtException", expEx);
-        }catch (SecurityException expEx){
+        } catch (SecurityException expEx) {
             LOGGER.error("Security Exception", expEx);
-        }catch (Exception expEx){
+        } catch (Exception expEx) {
             LOGGER.error("invalid token", expEx);
         }
         return false;

@@ -1,15 +1,14 @@
-package by.ratingsystem.security;
+package by.ratingsystem.security.jwt;
 
 import by.ratingsystem.model.User;
 import by.ratingsystem.repository.UserRepository;
-import by.ratingsystem.security.jwt.JwtUserDetails;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -17,6 +16,7 @@ public class JwtUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
+    @Autowired
     public JwtUserDetailsService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
@@ -27,11 +27,8 @@ public class JwtUserDetailsService implements UserDetailsService {
 
         return new JwtUserDetails(
                 user.getId(),
-                user.getFirstName(),
-                user.getLastName(),
                 user.getEmail(),
                 user.getPassword(),
-                LocalDateTime.now(),
                 List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()))
         );
     }
