@@ -32,7 +32,8 @@ public class VerificationServiceImpl implements VerificationService {
 
             return code;
         } catch (Exception e) {
-            throw new VerificationCodeException("Something wrong with verification code generation", e);
+            throw new VerificationCodeException(
+                    "Verification code generation failed. Please contact the administrator.", e);
         }
     }
 

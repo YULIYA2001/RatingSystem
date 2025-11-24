@@ -9,8 +9,8 @@ import by.ratingsystem.dto.UserReadDto;
 import by.ratingsystem.dto.VerifyUserDto;
 import by.ratingsystem.exception.JwtAuthenticationException;
 import by.ratingsystem.exception.VerificationCodeException;
-import by.ratingsystem.model.enums.Role;
 import by.ratingsystem.model.User;
+import by.ratingsystem.model.enums.Role;
 import by.ratingsystem.repository.UserRepository;
 import by.ratingsystem.security.jwt.JwtService;
 import by.ratingsystem.service.AuthService;
@@ -21,8 +21,6 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.naming.AuthenticationException;
 
 @Service
 @Transactional
@@ -87,10 +85,10 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public JwtResponseDto singIn(AuthRequestDto authDto) throws AuthenticationException {
-        User user = userRepository.findByEmail(authDto.getEmail()).orElseThrow(() -> new AuthenticationException("Email or password is not correct"));;
+    public JwtResponseDto singIn(AuthRequestDto authDto) {
+        User user = userRepository.findByEmail(authDto.getEmail()).orElseThrow(() -> new JwtAuthenticationException("Email or password is not correct"));;
         if (!passwordEncoder.matches(authDto.getPassword(), user.getPassword())) {
-            throw new AuthenticationException("Email or password is not correct");
+            throw new JwtAuthenticationException("Email or password is not correct");
         }
         if (!user.isVerified()) {
             throw new RuntimeException("Account not verified. Please verify your account.");
