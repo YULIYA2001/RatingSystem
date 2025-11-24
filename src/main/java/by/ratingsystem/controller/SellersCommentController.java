@@ -3,6 +3,7 @@ package by.ratingsystem.controller;
 import by.ratingsystem.dto.comment.CommentCreateDto;
 import by.ratingsystem.dto.comment.CommentFullReadDto;
 import by.ratingsystem.dto.comment.CommentReadDto;
+import by.ratingsystem.model.enums.Role;
 import by.ratingsystem.model.enums.Status;
 import by.ratingsystem.security.jwt.JwtUserDetails;
 import by.ratingsystem.service.CommentService;
@@ -26,7 +27,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/sellers/{sellerId}/comments")
 public class SellersCommentController {
-    private static final Long ANONYM = 0L;  // TODO extract
+    private static final Long ANONYM = Role.getAnonymId();
 
     private final CommentService commentService;
 

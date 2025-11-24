@@ -3,5 +3,9 @@ package by.ratingsystem.model.enums;
 public enum Role {
     ADMIN,
     SELLER,
-    ANONYM
+    ANONYM;
+
+    public static Long getAnonymId() {
+        return 0L;
+    }
 }

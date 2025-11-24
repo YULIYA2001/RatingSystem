@@ -2,6 +2,7 @@ package by.ratingsystem.controller;
 
 import by.ratingsystem.dto.comment.CommentAndSellerCreateDto;
 import by.ratingsystem.dto.comment.CommentFullReadDto;
+import by.ratingsystem.model.enums.Role;
 import by.ratingsystem.model.enums.Status;
 import by.ratingsystem.security.jwt.JwtUserDetails;
 import by.ratingsystem.service.CommentService;
@@ -21,8 +22,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/comments")
 public class CommentController {
-    private static final Long ANONYM = 0L;  // TODO extract
-
     private final CommentService commentService;
 
     public CommentController(CommentService commentService) {
@@ -44,7 +43,7 @@ public class CommentController {
             @RequestBody CommentAndSellerCreateDto dto,
             @AuthenticationPrincipal JwtUserDetails authenticatedUser
     ) {
-        Long authorId = authenticatedUser == null ? ANONYM : authenticatedUser.getId();
+        Long authorId = authenticatedUser == null ? Role.getAnonymId() : authenticatedUser.getId();
         return new ResponseEntity<>(commentService.createWithNewSellerProfile(authorId, dto), HttpStatus.OK);
     }
 

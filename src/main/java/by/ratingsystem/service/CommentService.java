@@ -8,6 +8,7 @@ import by.ratingsystem.dto.seller.ShortSellerProfileReadDto;
 import by.ratingsystem.model.Comment;
 import by.ratingsystem.model.SellerProfile;
 import by.ratingsystem.model.User;
+import by.ratingsystem.model.enums.Role;
 import by.ratingsystem.model.enums.Status;
 import by.ratingsystem.repository.CommentRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -29,8 +30,6 @@ public class CommentService {
     private final UserService userService;
     private final RatingService ratingService;
     private final SellerService sellerService;
-
-    private static final Long ANONYM = 0L;  // TODO extract
 
     public CommentService(CommentRepository commentRepository,
                           UserService userService,
@@ -218,7 +217,7 @@ public class CommentService {
     }
 
     private boolean isAuthor(Long currentUserId, Long commentAuthorId) {
-        return !Objects.equals(currentUserId, ANONYM)
+        return !Objects.equals(currentUserId, Role.getAnonymId())
                 && Objects.equals(currentUserId, commentAuthorId);
     }
 
