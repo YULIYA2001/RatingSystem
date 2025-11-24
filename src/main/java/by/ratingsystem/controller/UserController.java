@@ -2,7 +2,8 @@ package by.ratingsystem.controller;
 
 import by.ratingsystem.dto.UserReadDto;
 import by.ratingsystem.security.jwt.JwtUserDetails;
-import by.ratingsystem.service.impl.UserServiceImpl;
+import by.ratingsystem.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,9 +21,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    private final UserServiceImpl userService;
+    private final UserService userService;
 
-    public UserController(UserServiceImpl userService) {
+    @Autowired
+    public UserController(UserService userService) {
         this.userService = userService;
     }
 
@@ -40,10 +42,10 @@ public class UserController {
 
     @PutMapping
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<UserReadDto> updateUser(@RequestBody UserReadDto user,
+    public ResponseEntity<UserReadDto> updateUser(@RequestBody UserReadDto userDto,
                                                   @AuthenticationPrincipal JwtUserDetails authenticatedUser) {
         Long userId = authenticatedUser.getId();
-        return new ResponseEntity<>(userService.update(userId, user),  HttpStatus.OK);
+        return new ResponseEntity<>(userService.update(userId, userDto),  HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

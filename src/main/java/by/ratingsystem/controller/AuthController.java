@@ -5,7 +5,7 @@ import by.ratingsystem.dto.CheckCodeDto;
 import by.ratingsystem.dto.JwtResponseDto;
 import by.ratingsystem.dto.RefreshTokenDto;
 import by.ratingsystem.dto.ResetPasswordDto;
-import by.ratingsystem.dto.UserCraeteDto;
+import by.ratingsystem.dto.UserCreateDto;
 import by.ratingsystem.dto.UserReadDto;
 import by.ratingsystem.dto.VerifyUserDto;
 import by.ratingsystem.service.AuthService;
@@ -28,7 +28,7 @@ public class AuthController {
     }
 
     @PostMapping("/registration")
-    public ResponseEntity<UserReadDto> register(@RequestBody UserCraeteDto userDto) {
+    public ResponseEntity<UserReadDto> register(@RequestBody UserCreateDto userDto) {
         return new ResponseEntity<>(authService.register(userDto), HttpStatus.CREATED);
     }
 
@@ -44,12 +44,8 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<JwtResponseDto> singIn(@RequestBody AuthRequestDto authDto) {
-        try {
-            JwtResponseDto jwtResponseDto = authService.singIn(authDto);
-            return ResponseEntity.ok(jwtResponseDto);
-        } catch (javax.naming.AuthenticationException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-        }
+        JwtResponseDto jwtResponseDto = authService.singIn(authDto);
+        return ResponseEntity.ok(jwtResponseDto);
     }
 
     @PostMapping("/refresh-token")
