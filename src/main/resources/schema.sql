@@ -1,8 +1,5 @@
 DROP TABLE IF EXISTS users, seller_profiles, comments, ratings, games, game_objects;
 
--- DROP TYPE role, status;
--- CREATE TYPE role AS ENUM ('ANONYM', 'SELLER', 'ADMIN');
-
 CREATE TABLE users
 (
     id         BIGSERIAL PRIMARY KEY,
@@ -15,8 +12,6 @@ CREATE TABLE users
     role       VARCHAR(20)  NOT NULL DEFAULT 'SELLER' CHECK (role IN ('ANONYM', 'SELLER', 'ADMIN')),
     verified   BOOLEAN      NOT NULL DEFAULT FALSE
 );
-
--- CREATE TYPE status AS ENUM ('PENDING', 'APPROVED', 'REJECTED');
 
 CREATE TABLE seller_profiles
 (
