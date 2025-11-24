@@ -6,17 +6,20 @@
 
 #### 2. Base logic:
 - Estimation - 20h
-- Spent - #TODOh
+- Spent - 33h
 - 
 #### 3. Registration and authorization: 
-- Estimation - 25h
-  - Redis: 10h
-- Spent - #TODOh
+- Estimation - 25h (Redis: 10h)
+- Spent - 17h
 
 #### 4. Test:
 - Estimation - 8h
-- Spent - #TODOh
+- Spent - 16h
 
 #### 5. Cleanup:
 - Estimation - 6h
-- Spent - #TODOh
+- Spent - 4h
+
+#### Total:
+- Estimation - 69h
+- Spent - 79h :)
