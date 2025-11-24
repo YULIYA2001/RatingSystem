@@ -6,6 +6,7 @@ import by.ratingsystem.model.Status;
 import by.ratingsystem.service.CommentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,7 +26,7 @@ public class CommentController {
     }
 
     @GetMapping
-//    @PreAuthorize(ADMIN)
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<CommentFullReadDto>> getSellerComments(@RequestParam(required = false) Long sellerId,
                                                                       @RequestParam(required = false) Boolean verifiedSeller,
                                                                       @RequestParam(required = false) Status status) {
@@ -33,23 +34,20 @@ public class CommentController {
     }
 
     @PostMapping
-    //    @PreAuthorize(ANONYM)
     public ResponseEntity<CommentFullReadDto> createCommentWithNewSellerProfile(@RequestBody CommentAndSellerCreateDto dto) {
         return new ResponseEntity<>(commentService.createWithNewSellerProfile(dto), HttpStatus.OK);
     }
 
 
     @PostMapping("/approve")
-    //    @PreAuthorize(ADMIN)
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<CommentFullReadDto>> approveComments(@RequestBody List<Long> ids) {
         return new ResponseEntity<>(commentService.changeStatus(ids, Status.APPROVED), HttpStatus.OK);
     }
 
     @PostMapping("/reject")
-    //    @PreAuthorize(ADMIN)
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<CommentFullReadDto>> rejectComments(@RequestBody List<Long> ids) {
         return new ResponseEntity<>(commentService.changeStatus(ids, Status.REJECTED), HttpStatus.OK);
     }
-
-
 }

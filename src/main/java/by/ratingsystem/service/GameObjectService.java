@@ -85,9 +85,13 @@ public class GameObjectService {
     // if new game and id found -> replace game and delete old if it has no other objects
     // if new game and id is null -> replace game and delete old if it has no other objects
     @Transactional
-    public GameObjectReadDto update(Long id, GameObjectCreateDto gameObjectDto) {
+    public GameObjectReadDto update(Long userId, Long id, GameObjectCreateDto gameObjectDto) {
         GameObject gameObject = gameObjectRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("GameObject not found"));
+
+        if (!Objects.equals(gameObject.getSeller().getUser().getId(), userId)) {
+            throw new EntityNotFoundException("You can modify only your game objects");
+        }
 
         Long oldGameId = null;
 
@@ -116,9 +120,13 @@ public class GameObjectService {
     }
 
     @Transactional
-    public void delete(Long id) {
+    public void delete(Long userId, Long id) {
         GameObject gameObject = gameObjectRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("GameObject with id {%s} not found".formatted(id)));
+
+        if (!Objects.equals(gameObject.getSeller().getUser().getId(), userId)) {
+            throw new EntityNotFoundException("You can delete only your game objects");
+        }
 
         Long gameId = gameObject.getGame().getId();
         gameObjectRepository.deleteById(id);

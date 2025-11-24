@@ -13,10 +13,10 @@ import by.ratingsystem.repository.CommentRepository;
 import by.ratingsystem.repository.SellerProfileRepository;
 import by.ratingsystem.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.nio.file.AccessDeniedException;
 import java.util.IntSummaryStatistics;
 import java.util.List;
 import java.util.Map;

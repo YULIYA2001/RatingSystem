@@ -3,9 +3,12 @@ package by.ratingsystem.controller;
 import by.ratingsystem.dto.GameDto;
 import by.ratingsystem.dto.GameObjectCreateDto;
 import by.ratingsystem.dto.GameObjectReadDto;
+import by.ratingsystem.security.jwt.JwtUserDetails;
 import by.ratingsystem.service.GameObjectService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,10 +30,10 @@ public class GameObjectController {
     }
 
     @PostMapping
-//    @PreAuthorize(USER current)
-    public ResponseEntity<GameObjectReadDto> create(@RequestBody GameObjectCreateDto gameObjectCreateDto) {
-        // get authorized userId
-        Long userId = 3L;
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<GameObjectReadDto> create(@RequestBody GameObjectCreateDto gameObjectCreateDto,
+                                                    @AuthenticationPrincipal JwtUserDetails authenticatedUser) {
+        Long userId = authenticatedUser.getId();
         return new ResponseEntity<>(gameObjectService.create(userId, gameObjectCreateDto), HttpStatus.CREATED);
     }
 
@@ -45,16 +48,19 @@ public class GameObjectController {
     }
 
     @PutMapping("/{id}")
-//    @PreAuthorize(USER current)
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<GameObjectReadDto> update(@PathVariable Long id,
-                                                    @RequestBody GameObjectCreateDto gameObjectDto) {
-        return new ResponseEntity<>(gameObjectService.update(id, gameObjectDto), HttpStatus.OK);
+                                                    @RequestBody GameObjectCreateDto gameObjectDto,
+                                                    @AuthenticationPrincipal JwtUserDetails authenticatedUser) {
+        Long userId = authenticatedUser.getId();
+        return new ResponseEntity<>(gameObjectService.update(userId, id, gameObjectDto), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-//    @PreAuthorize(USER current)
-    public HttpStatus delete(@PathVariable Long id) {
-        gameObjectService.delete(id);
-        return HttpStatus.OK;
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<HttpStatus> delete(@PathVariable Long id, @AuthenticationPrincipal JwtUserDetails authenticatedUser) {
+        Long userId = authenticatedUser.getId();
+        gameObjectService.delete(userId, id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

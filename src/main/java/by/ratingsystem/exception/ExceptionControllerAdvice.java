@@ -1,12 +1,15 @@
 package by.ratingsystem.exception;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.nio.file.AccessDeniedException;
+import javax.naming.AuthenticationException;
 
 @RestControllerAdvice
 public class ExceptionControllerAdvice {
@@ -15,7 +18,6 @@ public class ExceptionControllerAdvice {
         return ResponseEntity.badRequest().body(exp.getMessage());
     }
 
-    // TODO import AccessDeniedException from security
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<String> handleException(AccessDeniedException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
@@ -29,6 +31,24 @@ public class ExceptionControllerAdvice {
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<String> handleException(EntityNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ResponseEntity<String> handleException(AuthenticationException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Authentication Failed" + ex.getMessage());
+    }
+
+    @ExceptionHandler(ExpiredJwtException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ResponseEntity<String> handleException(ExpiredJwtException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Token invalid or expired" + ex.getMessage());
+    }
+
+    @ExceptionHandler(VerificationCodeException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN) // TODO another status
+    public ResponseEntity<String> handleException(VerificationCodeException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
     }
 
     // not do like this

@@ -4,9 +4,13 @@ import by.ratingsystem.dto.CommentCreateDto;
 import by.ratingsystem.dto.CommentFullReadDto;
 import by.ratingsystem.dto.CommentReadDto;
 import by.ratingsystem.model.Status;
+import by.ratingsystem.security.jwt.JwtUserDetails;
 import by.ratingsystem.service.CommentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,19 +21,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @RestController
 @RequestMapping("/sellers/{sellerId}/comments")
 public class SellersCommentController {
+    private static final Long ANONYM = 0L;  // TODO extract
+
     private final CommentService commentService;
 
     public SellersCommentController(CommentService commentService) {
         this.commentService = commentService;
     }
-
-//* PUT         /users/:id/comments: Обновить комментарий.
 
     @PostMapping
     public ResponseEntity<CommentFullReadDto> addComment(@PathVariable Long sellerId,
@@ -38,12 +41,11 @@ public class SellersCommentController {
     }
 
     @GetMapping
-//    @PreAuthorize(ALL + ADMIN)
     public ResponseEntity<List<? extends CommentReadDto>> getSellerComments(
             @PathVariable Long sellerId,
-            @RequestParam(required = false) Status status) {
-//            , Authentication authentication) {
-        boolean isAdmin = true;    // authentication...;
+            @RequestParam(required = false) Status status,
+            @AuthenticationPrincipal JwtUserDetails authenticatedUser) {
+        boolean isAdmin = authenticatedUser != null && authenticatedUser.isAdmin();
 
         if (!isAdmin) {
             status = Status.APPROVED;
@@ -53,29 +55,32 @@ public class SellersCommentController {
     }
 
     @GetMapping("/{commentId}")
-    //    @PreAuthorize(ALL + ADMIN)
     public ResponseEntity<? extends CommentReadDto> getComment(@PathVariable Long sellerId,
-                                                               @PathVariable Long commentId) {
-//                                                               , Authentication authentication) {
-        boolean isAdmin = true;    // authentication...;
+                                                               @PathVariable Long commentId,
+                                                               @AuthenticationPrincipal JwtUserDetails authenticatedUser) {
+        boolean isAdmin = authenticatedUser != null && authenticatedUser.isAdmin();
 
         if (isAdmin) {
             return new ResponseEntity<>(commentService.getForAdminById(sellerId, commentId), HttpStatus.OK);
         }
 
-        Long currentUserId = 3L;
+        Long currentUserId = authenticatedUser == null ? ANONYM : authenticatedUser.getId();
         return new ResponseEntity<>(commentService.getForUserById(sellerId, commentId, currentUserId), HttpStatus.OK);
     }
 
     @DeleteMapping("/{commentId}")
-    //    @PreAuthorize(USER + ADMIN)
-    public ResponseEntity<Void> deleteComment(@PathVariable Long sellerId, @PathVariable Long commentId) throws AccessDeniedException {
-        boolean isAdmin = true;
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Void> deleteComment(
+            @PathVariable Long sellerId,
+            @PathVariable Long commentId,
+            @AuthenticationPrincipal JwtUserDetails authenticatedUser
+    ) throws AccessDeniedException {
+        boolean isAdmin = authenticatedUser != null && authenticatedUser.isAdmin();
 
         if (isAdmin) {
             commentService.deleteForAdmin(sellerId, commentId);
         } else {
-            Long currentUserId = 3L;
+            Long currentUserId = authenticatedUser == null ? ANONYM : authenticatedUser.getId();
             commentService.deleteForUser(sellerId, commentId, currentUserId);
         }
 
@@ -83,10 +88,11 @@ public class SellersCommentController {
     }
 
     @PutMapping
-    //    @PreAuthorize(USER)
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<CommentFullReadDto> updateComment(@PathVariable Long sellerId,
-                                                            @RequestBody CommentCreateDto commentDto) throws AccessDeniedException {
-        Long currentUserId = 3L;
+                                                            @RequestBody CommentCreateDto commentDto,
+                                                            @AuthenticationPrincipal JwtUserDetails authenticatedUser) throws AccessDeniedException {
+        Long currentUserId = authenticatedUser == null ? ANONYM : authenticatedUser.getId();
         return new ResponseEntity<>(commentService.update(sellerId, commentDto, currentUserId), HttpStatus.OK);
     }
 }
