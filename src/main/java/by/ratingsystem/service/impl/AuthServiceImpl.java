@@ -9,7 +9,7 @@ import by.ratingsystem.dto.UserReadDto;
 import by.ratingsystem.dto.VerifyUserDto;
 import by.ratingsystem.exception.JwtAuthenticationException;
 import by.ratingsystem.exception.VerificationCodeException;
-import by.ratingsystem.model.Role;
+import by.ratingsystem.model.enums.Role;
 import by.ratingsystem.model.User;
 import by.ratingsystem.repository.UserRepository;
 import by.ratingsystem.security.jwt.JwtService;

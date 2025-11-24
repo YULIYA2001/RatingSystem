@@ -7,7 +7,7 @@ import by.ratingsystem.dto.UserReadDto;
 import by.ratingsystem.exception.DuplicateEntityException;
 import by.ratingsystem.model.Rating;
 import by.ratingsystem.model.SellerProfile;
-import by.ratingsystem.model.Status;
+import by.ratingsystem.model.enums.Status;
 import by.ratingsystem.model.User;
 import by.ratingsystem.repository.SellerProfileRepository;
 import by.ratingsystem.repository.UserRepository;

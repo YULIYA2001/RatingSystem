@@ -1,7 +1,7 @@
 package by.ratingsystem.repository;
 
 import by.ratingsystem.model.Comment;
-import by.ratingsystem.model.Status;
+import by.ratingsystem.model.enums.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -2,7 +2,7 @@ package by.ratingsystem.controller;
 
 import by.ratingsystem.dto.CommentAndSellerCreateDto;
 import by.ratingsystem.dto.CommentFullReadDto;
-import by.ratingsystem.model.Status;
+import by.ratingsystem.model.enums.Status;
 import by.ratingsystem.service.CommentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

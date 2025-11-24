@@ -3,7 +3,7 @@ package by.ratingsystem.controller;
 import by.ratingsystem.dto.SellerProfileCreateDto;
 import by.ratingsystem.dto.SellerProfileFullReadDto;
 import by.ratingsystem.dto.SellerProfileReadDto;
-import by.ratingsystem.model.Status;
+import by.ratingsystem.model.enums.Status;
 import by.ratingsystem.security.jwt.JwtUserDetails;
 import by.ratingsystem.service.SellerService;
 import org.springframework.data.domain.PageRequest;

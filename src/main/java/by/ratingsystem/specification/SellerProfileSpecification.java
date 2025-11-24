@@ -1,7 +1,7 @@
 package by.ratingsystem.specification;
 
 import by.ratingsystem.model.SellerProfile;
-import by.ratingsystem.model.Status;
+import by.ratingsystem.model.enums.Status;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 

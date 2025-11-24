@@ -14,7 +14,6 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "ratings")
 public class Rating extends BaseEntity {
-    // TODO to String and in schema script
     @Column(name = "avg_rating", nullable = false)
     private BigDecimal avgRating;
 

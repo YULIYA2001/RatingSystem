@@ -1,6 +1,7 @@
 package by.ratingsystem.model;
 
 import by.ratingsystem.model.base.TimestampedEntity;
+import by.ratingsystem.model.enums.Status;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

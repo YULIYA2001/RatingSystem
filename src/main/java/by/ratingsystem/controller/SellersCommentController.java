@@ -3,7 +3,7 @@ package by.ratingsystem.controller;
 import by.ratingsystem.dto.CommentCreateDto;
 import by.ratingsystem.dto.CommentFullReadDto;
 import by.ratingsystem.dto.CommentReadDto;
-import by.ratingsystem.model.Status;
+import by.ratingsystem.model.enums.Status;
 import by.ratingsystem.security.jwt.JwtUserDetails;
 import by.ratingsystem.service.CommentService;
 import org.springframework.http.HttpStatus;

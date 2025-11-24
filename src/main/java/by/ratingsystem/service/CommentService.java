@@ -7,7 +7,7 @@ import by.ratingsystem.dto.CommentReadDto;
 import by.ratingsystem.dto.ShortSellerProfileReadDto;
 import by.ratingsystem.model.Comment;
 import by.ratingsystem.model.SellerProfile;
-import by.ratingsystem.model.Status;
+import by.ratingsystem.model.enums.Status;
 import by.ratingsystem.model.User;
 import by.ratingsystem.repository.CommentRepository;
 import by.ratingsystem.repository.SellerProfileRepository;
