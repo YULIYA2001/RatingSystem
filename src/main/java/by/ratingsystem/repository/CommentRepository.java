@@ -10,11 +10,11 @@ import java.util.Optional;
 
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Long> {
+    Optional<Comment> findByIdAndSellerId(Long id, Long sellerId);
+    Optional<Comment> findByAuthorIdAndSellerId(Long authorId, Long sellerId);
     List<Comment> findBySellerIdAndStatusOrderByUpdatedAtDesc(Long authorId, Status status);
     List<Comment> findBySellerIdOrderByUpdatedAtDesc(Long sellerId);
-    Optional<Comment> findByIdAndSellerId(Long id, Long sellerId);
     List<Comment> findByStatusOrderByUpdatedAtDesc(Status status);
     List<Comment> findAllByOrderByUpdatedAtDesc();
-    Optional<Comment> findByAuthorIdAndSellerId(Long authorId, Long sellerId);
     List<Comment> findByIdInAndStatusAndVerifiedSeller(List<Long> ids, Status status, boolean verifiedSeller);
 }
