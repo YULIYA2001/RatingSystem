@@ -1,4 +1,4 @@
-package by.ratingsystem.dto;
+package by.ratingsystem.dto.seller;
 
 public class ShortSellerProfileReadDto {
     private Long id;

@@ -1,4 +1,4 @@
-package by.ratingsystem.dto;
+package by.ratingsystem.dto.seller;
 
 import java.time.LocalDateTime;
 

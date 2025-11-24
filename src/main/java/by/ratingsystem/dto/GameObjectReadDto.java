@@ -1,5 +1,7 @@
 package by.ratingsystem.dto;
 
+import by.ratingsystem.dto.seller.ShortSellerProfileReadDto;
+
 import java.time.LocalDateTime;
 
 public class GameObjectReadDto {

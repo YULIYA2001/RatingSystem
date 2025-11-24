@@ -1,5 +1,7 @@
 package by.ratingsystem.dto;
 
+import by.ratingsystem.dto.seller.ShortSellerProfileReadDto;
+
 public class CommentFullReadDto extends CommentReadDto {
     private String status;
     private boolean isVerifiedSeller;

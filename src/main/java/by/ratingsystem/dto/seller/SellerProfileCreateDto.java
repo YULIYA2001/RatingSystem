@@ -1,4 +1,4 @@
-package by.ratingsystem.dto;
+package by.ratingsystem.dto.seller;
 
 public class SellerProfileCreateDto {
     private String nickname;

@@ -1,5 +1,7 @@
 package by.ratingsystem.dto;
 
+import by.ratingsystem.dto.seller.SellerProfileCreateDto;
+
 public class CommentAndSellerCreateDto {
     private CommentCreateDto commentDto;
     private SellerProfileCreateDto sellerDto;

@@ -4,7 +4,7 @@ import by.ratingsystem.dto.GameDto;
 import by.ratingsystem.dto.GameObjectCreateDto;
 import by.ratingsystem.dto.GameObjectReadDto;
 import by.ratingsystem.dto.ShortGameDto;
-import by.ratingsystem.dto.ShortSellerProfileReadDto;
+import by.ratingsystem.dto.seller.ShortSellerProfileReadDto;
 import by.ratingsystem.exception.DuplicateEntityException;
 import by.ratingsystem.model.Game;
 import by.ratingsystem.model.GameObject;

@@ -1,6 +1,6 @@
 package by.ratingsystem.controller;
 
-import by.ratingsystem.dto.UserReadDto;
+import by.ratingsystem.dto.user.UserReadDto;
 import by.ratingsystem.security.jwt.JwtUserDetails;
 import by.ratingsystem.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

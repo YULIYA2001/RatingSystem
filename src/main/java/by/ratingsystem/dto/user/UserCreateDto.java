@@ -1,4 +1,4 @@
-package by.ratingsystem.dto;
+package by.ratingsystem.dto.user;
 
 public class UserCreateDto {
     private String firstName;

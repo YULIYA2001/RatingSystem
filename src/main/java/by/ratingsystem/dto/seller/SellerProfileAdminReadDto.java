@@ -1,13 +1,15 @@
-package by.ratingsystem.dto;
+package by.ratingsystem.dto.seller;
+
+import by.ratingsystem.dto.user.UserReadDto;
 
 import java.time.LocalDateTime;
 
-public class SellerProfileFullReadDto extends SellerProfileReadDto {
+public class SellerProfileAdminReadDto extends SellerProfileReadDto {
     private UserReadDto user;
     private String status;
 
-    public SellerProfileFullReadDto(Long id, String nickname, Long userId, String description, LocalDateTime createdDate,
-                                    String avgRating, int reviewsCount, UserReadDto user, String status) {
+    public SellerProfileAdminReadDto(Long id, String nickname, Long userId, String description, LocalDateTime createdDate,
+                                     String avgRating, int reviewsCount, UserReadDto user, String status) {
         super(id, nickname, userId, description, createdDate, avgRating, reviewsCount);
         this.user = user;
         this.status = status;

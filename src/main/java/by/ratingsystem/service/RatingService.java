@@ -8,6 +8,15 @@ import java.math.RoundingMode;
 
 @Service
 public class RatingService {
+    public Rating getEmptyRating() {
+        Rating rating = new Rating();
+        rating.setAvgRating(BigDecimal.valueOf(0));
+        rating.setCommentsCount(0);
+        rating.setRatingSum(0);
+
+        return rating;
+    }
+
     public void reduceAndSaveRating(Rating rating, int oldCommentRating) {
         recalculateAndSaveRating(rating, -oldCommentRating, -1);
     }

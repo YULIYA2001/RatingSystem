@@ -1,11 +1,12 @@
 package by.ratingsystem.controller;
 
-import by.ratingsystem.dto.SellerProfileCreateDto;
-import by.ratingsystem.dto.SellerProfileFullReadDto;
-import by.ratingsystem.dto.SellerProfileReadDto;
+import by.ratingsystem.dto.seller.SellerProfileCreateDto;
+import by.ratingsystem.dto.seller.SellerProfileAdminReadDto;
+import by.ratingsystem.dto.seller.SellerProfileReadDto;
 import by.ratingsystem.model.enums.Status;
 import by.ratingsystem.security.jwt.JwtUserDetails;
 import by.ratingsystem.service.SellerService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,15 +26,19 @@ import java.util.List;
 @RestController
 @RequestMapping("/sellers")
 public class SellerController {
+    private static final String DEFAULT_PAGE_NUMBER = "0";
+    private static final String DEFAULT_PAGE_SIZE = "5";
+
     private final SellerService sellerService;
 
+    @Autowired
     public SellerController(SellerService sellerService) {
         this.sellerService = sellerService;
     }
 
     @PostMapping
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<SellerProfileFullReadDto> createSellerProfile(
+    public ResponseEntity<SellerProfileAdminReadDto> createSellerProfile(
             @RequestBody SellerProfileCreateDto sellerCreateDto,
             @AuthenticationPrincipal JwtUserDetails authenticatedUser
     ) {
@@ -47,8 +52,8 @@ public class SellerController {
             @RequestParam(required = false) BigDecimal minRating,
             @RequestParam(required = false) BigDecimal maxRating,
             @RequestParam(required = false) Long gameId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = DEFAULT_PAGE_NUMBER) int page,
+            @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int size,
             @AuthenticationPrincipal JwtUserDetails authenticatedUser) {
         boolean isAdmin = authenticatedUser != null && authenticatedUser.isAdmin();
 
@@ -63,19 +68,20 @@ public class SellerController {
     }
 
     @GetMapping("/top-best")
-    public ResponseEntity<List<SellerProfileFullReadDto>> getTopSellerProfiles(@RequestParam(required = false) Integer topCount) {
+    public ResponseEntity<List<SellerProfileAdminReadDto>> getTopSellerProfiles(
+            @RequestParam(required = false) Integer topCount) {
         return new ResponseEntity<>(sellerService.findTopRatingSellers(topCount), HttpStatus.OK);
     }
 
     @PostMapping("/{id}/approve")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<SellerProfileFullReadDto> approveSellerProfile(@PathVariable Long id) {
+    public ResponseEntity<SellerProfileAdminReadDto> approveSellerProfile(@PathVariable Long id) {
         return new ResponseEntity<>(sellerService.approveSellerProfile(id, Status.APPROVED), HttpStatus.OK);
     }
 
     @PostMapping("/{id}/reject")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<SellerProfileFullReadDto> rejectSellerProfile(@PathVariable Long id) {
+    public ResponseEntity<SellerProfileAdminReadDto> rejectSellerProfile(@PathVariable Long id) {
         return new ResponseEntity<>(sellerService.rejectSellerProfile(id, Status.REJECTED), HttpStatus.OK);
     }
 }

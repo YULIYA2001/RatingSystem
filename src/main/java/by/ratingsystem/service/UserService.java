@@ -1,6 +1,6 @@
 package by.ratingsystem.service;
 
-import by.ratingsystem.dto.UserReadDto;
+import by.ratingsystem.dto.user.UserReadDto;
 import by.ratingsystem.model.User;
 import by.ratingsystem.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -41,9 +41,9 @@ public class UserService {
         return mapToReadDto(userRepository.save(user));
     }
 
-    private User getById(Long userId) {
+    public User getById(Long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+                .orElseThrow(() -> new EntityNotFoundException("User with id=%d not found".formatted(userId)));
     }
 
     private UserReadDto mapToReadDto(User user) {
