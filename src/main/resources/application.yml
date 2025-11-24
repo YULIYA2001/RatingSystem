@@ -18,8 +18,8 @@ spring:
       hibernate:
         format_sql: true
   mail:
-#    host: smtp.gmail.com
-#    port: 587
+    host: smtp.gmail.com
+    port: 587
     username: ${mail.support-email}
     password: ${mail.app-password}
     properties:
@@ -28,6 +28,8 @@ spring:
           auth: true
           starttls:
             enable: true
+#        debug: true
+
   data:
     redis:
       host: 192.168.99.100
@@ -45,9 +47,8 @@ jwt:
     expired: 3600000            # 1 hour
     refresh-expired: 86400000   # 1 day
 
-verification:
-  code:
-    timeout: 24
+verification.code.timeout: 24
+password.encoder.strength: 4
 
 ---
 
